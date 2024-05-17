@@ -8,6 +8,7 @@ import { config } from 'dotenv';
 import cors from 'cors';
 import pkg from 'mongoose';
 const { connect, connection } = pkg;
+import problemRouter from './routes/problemRoutes.js';
 // Load environment variables
 config();
 
@@ -28,8 +29,7 @@ db.once('open', () => {
 });
 
 // Routes
-import exampleRouter from './routes/example.js';
-app.use('/api/example', exampleRouter);
+app.use('/api/problem', problemRouter);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
