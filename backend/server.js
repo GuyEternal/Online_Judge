@@ -16,8 +16,13 @@ config();
 const app = express();
 
 // Middleware
-app.use(cors());
 app.use(json());
+app.use(cors()); // by default it will allow all origins, methods and headers
+// app.use(cors({
+//     origin: 'http://localhost:3000', // put your frontend url here whatever it may be
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//     allowedHeaders: ['Content-Type']
+// }));
 
 // Connect to MongoDB
 connect(process.env.MONGO_URI);

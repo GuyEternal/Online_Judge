@@ -4,7 +4,10 @@ import Problem from '../models/problem.js';
 export const getAllProblems = async (req, res) => {
     try {
         const problems = await Problem.find();
+        console.log("Problems sent!");
+        console.log(problems);
         res.json(problems);
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
