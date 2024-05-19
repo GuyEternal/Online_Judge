@@ -9,6 +9,9 @@ import cors from 'cors';
 import pkg from 'mongoose';
 const { connect, connection } = pkg;
 import problemRouter from './routes/problemRoutes.js';
+import submissionRouter from './routes/submissionRoutes.js';
+import testcaseRouter from './routes/testcaseRoutes.js';
+import userRouter from './routes/userRoutes.js';
 // Load environment variables
 config();
 
@@ -35,6 +38,9 @@ db.once('open', () => {
 
 // Routes
 app.use('/api/problem', problemRouter);
+app.use('/api/submission', submissionRouter);
+app.use('/api/testcase', testcaseRouter);
+app.use('/api/auth', userRouter);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
