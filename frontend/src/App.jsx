@@ -1,7 +1,8 @@
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home/Home.jsx";
-import Auth from "./pages/Auth/auth.jsx";
+import Register from "./pages/Register/register.jsx";
+import Login from "./pages/Login/login.jsx";
 import ProblemSet from "./pages/ProblemSet/ProblemSet.jsx";
 import Problem from "./pages/Problem/Problem.jsx";
 
@@ -11,8 +12,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route index element={<Home />} />
-          <Route path="/auth" element={<Auth />}/>
-          <Route path="/problemset" element={<ProblemSet />}/>
+          <Route path="/auth/register" element={<Register />} />
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/problemset" element={<ProblemSet />} />
           <Route path="/problem/:id" element={<Problem />} />
         </Routes>
       </BrowserRouter>

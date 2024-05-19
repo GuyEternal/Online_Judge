@@ -42,7 +42,7 @@ export const register = async (req, res) => {
         user.token = token;
         user.password = undefined; // Set password to undefined to avoid exposing even the hashedPassword to the client side
 
-        res.status(200).json({ message: "You have successfully registered!", user });
+        res.status(200).json({ success: true, message: "You have successfully registered!", user });
     }
     catch (error) {
         res.status(404).send(error);
@@ -75,7 +75,7 @@ export const login = async (req, res) => {
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
-            }).json({ message: "You have successfully logged in!", currUser, token });
+            }).json({ message: "You have successfully logged in!", currUser, token, success: true });
         });
 
     } catch (error) {
