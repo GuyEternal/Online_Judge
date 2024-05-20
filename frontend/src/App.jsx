@@ -5,6 +5,7 @@ import Register from "./pages/Register/register.jsx";
 import Login from "./pages/Login/login.jsx";
 import ProblemSet from "./pages/ProblemSet/ProblemSet.jsx";
 import Problem from "./pages/Problem/Problem.jsx";
+import NotFound from "./pages/NotFound/NotFound.jsx";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/auth/login" element={<Login />} />
           <Route path="/problemset" element={<ProblemSet />} />
           <Route path="/problem/:id" element={<Problem />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </div>
