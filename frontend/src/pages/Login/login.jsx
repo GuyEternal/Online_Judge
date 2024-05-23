@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
+import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -23,12 +24,18 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const response = await axios.post("http://localhost:3001/api/auth/login", {
-      email,
-      password,
-    });
+    const response = await axios.post(
+      "http://localhost:3001/api/auth/login",
+      {
+        email,
+        password,
+      },
+      { withCredentials: true }
+    );
     if (response.data.success) {
-      navigate("/problemSet");
+      console.log(response.data.id);
+      console.log(document.cookie);
+      navigate("/");
     }
   };
   return (

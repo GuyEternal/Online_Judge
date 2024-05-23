@@ -7,6 +7,7 @@ import express, { json } from 'express';
 import { config } from 'dotenv';
 import cors from 'cors';
 import pkg from 'mongoose';
+import cookieParser from 'cookie-parser';
 const { connect, connection } = pkg;
 import problemRouter from './routes/problemRoutes.js';
 import submissionRouter from './routes/submissionRoutes.js';
@@ -19,13 +20,12 @@ config();
 const app = express();
 
 // Middleware
-app.use(json());
-app.use(cors()); // by default it will allow all origins, methods and headers
-// app.use(cors({
-//     origin: 'http://localhost:3000', // put your frontend url here whatever it may be
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     allowedHeaders: ['Content-Type']
-// }));
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+}));
 
 // Connect to MongoDB
 connect(process.env.MONGO_URI);
@@ -41,6 +41,13 @@ app.use('/api/problem', problemRouter);
 app.use('/api/submission', submissionRouter);
 app.use('/api/testcase', testcaseRouter);
 app.use('/api/auth', userRouter);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    const errorStatus = err.status || 500;
+    const errorMessage = err.message || "Something went wrong!";
+    return res.status(errorStatus).send(errorMessage);
+});
 
 // Start the server
 const PORT = process.env.PORT || 5000;

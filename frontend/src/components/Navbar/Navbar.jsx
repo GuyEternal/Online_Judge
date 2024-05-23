@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import {
   Box,
   Flex,
@@ -24,12 +23,27 @@ import {
   ChevronRightIcon,
 } from "@chakra-ui/icons";
 import ColorModeSwitcher from "../ColorModeSwitcher/ColorModeSwitcher.jsx";
-
+import UnivCookies from "universal-cookie";
 import styles from "./styles.module.css";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
-
+  const [isLoggedIn, setIsLoggedIn] = useState();
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/api/auth/checkAuth", {
+        withCredentials: true,
+      })
+      .then((response) => {
+        setIsLoggedIn(response.data.success);
+      })
+      .catch((error) => {
+        console.error("Error checking authentication status:", error);
+        setIsLoggedIn(false);
+      });
+  }, []); // Removed isLoggedIn from the dependency array
   return (
     <Box className={styles["big-box"]} w={"100%"}>
       <Flex
@@ -79,29 +93,43 @@ export default function Navbar() {
           spacing={6}
         >
           <ColorModeSwitcher />
-          <Button
-            as={"a"}
-            fontSize={"sm"}
-            fontWeight={400}
-            variant={"link"}
-            href={"auth/login"}
-          >
-            Sign In
-          </Button>
-          <Button
-            as={"a"}
-            display={{ base: "none", md: "inline-flex" }}
-            fontSize={"sm"}
-            fontWeight={600}
-            color={"white"}
-            bg={"pink.400"}
-            href={"auth/register"}
-            _hover={{
-              bg: "pink.300",
-            }}
-          >
-            Sign Up
-          </Button>
+          {!isLoggedIn ? (
+            <Flex
+              padding={2}
+              alignContent={"center"}
+              justifyContent={"space-between"}
+              maxW={"400rem"}
+            >
+              <Button
+                as={"a"}
+                padding={"0.8rem"}
+                fontSize={"sm"}
+                fontWeight={400}
+                variant={"link"}
+                href={"http://localhost:5173/auth/login"}
+              >
+                Sign In
+              </Button>
+              <Button
+                as={"a"}
+                padding={"0.8rem"}
+                display={{ base: "none", md: "inline-flex" }}
+                h={"100%"}
+                fontSize={"sm"}
+                fontWeight={600}
+                color={"black"}
+                bg={"cyan.400"}
+                href={"http://localhost:5173/auth/register"}
+                _hover={{
+                  bg: "cyan.300",
+                }}
+              >
+                Sign Up
+              </Button>
+            </Flex>
+          ) : (
+            <p>User is logged in.</p>
+          )}
         </Stack>
       </Flex>
 
@@ -115,7 +143,7 @@ export default function Navbar() {
 const DesktopNav = () => {
   const linkColor = useColorModeValue("gray.600", "gray.200");
   const linkHoverColor = useColorModeValue("gray.800", "white");
-  const popoverContentBgColor = useColorModeValue("white", "gray.800");
+  const popoverContentBgColor = useColorModeValue("white", "blue.900");
 
   return (
     <Stack direction={"row"} spacing={4}>
@@ -170,13 +198,13 @@ const DesktopSubNav = ({ label, href, subLabel }) => {
       display={"block"}
       p={2}
       rounded={"md"}
-      _hover={{ bg: useColorModeValue("pink.50", "gray.900") }}
+      _hover={{ bg: useColorModeValue("cyan.50", "gray.900") }}
     >
       <Stack direction={"row"} align={"center"}>
         <Box>
           <Text
             transition={"all .3s ease"}
-            _groupHover={{ color: "pink.400" }}
+            _groupHover={{ color: "cyan.400" }}
             fontWeight={500}
           >
             {label}
@@ -192,7 +220,7 @@ const DesktopSubNav = ({ label, href, subLabel }) => {
           align={"center"}
           flex={1}
         >
-          <Icon color={"pink.400"} w={5} h={5} as={ChevronRightIcon} />
+          <Icon color={"cyan.400"} w={5} h={5} as={ChevronRightIcon} />
         </Flex>
       </Stack>
     </Link>
@@ -287,7 +315,7 @@ const NAV_ITEMS = [
     children: [
       {
         label: "Previous Contests",
-        subLabel: "See how you've done",
+        subLabel: "See how you've performed",
         href: "/broken",
       },
       {
@@ -300,5 +328,17 @@ const NAV_ITEMS = [
   {
     label: "Submissions",
     href: "#",
+    children: [
+      {
+        label: "My Submissions",
+        subLabel: "",
+        href: "/broken",
+      },
+      {
+        label: "All Submission",
+        subLabel: "",
+        href: "/broken",
+      },
+    ],
   },
 ];

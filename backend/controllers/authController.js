@@ -2,8 +2,10 @@ import mongoose from "mongoose";
 import User from "../models/user.js";
 import bcrypt, { hash } from "bcrypt";
 import jwt from "jsonwebtoken";
+import cookies from "cookie-parser"
 // Use .env file to store the secret key:
 import dotenv from "dotenv";
+import { verifyToken } from "../middleware/verifyToken.js";
 
 // Implement Register and Login endpoints:
 
@@ -71,11 +73,15 @@ export const login = async (req, res) => {
             currUser.token = token;
             currUser.password = undefined;
             // send cookies to the client:
+            let oid = mongoose.Types.ObjectId;
+            oid = currUser._id;
+            let id = oid.toString();
+            // console.log(id_str);
             res.status(200).cookie("token", token, {
                 httpOnly: true,
-                secure: true,
+                secure: false,
                 sameSite: "none",
-            }).json({ message: "You have successfully logged in!", currUser, token, success: true });
+            }).json({ message: "You have successfully logged in!", currUser, id, token, success: true });
         });
 
     } catch (error) {
@@ -89,5 +95,38 @@ export const logout = async (req, res) => {
         res.clearCookie("token").send("You have successfully logged out!");
     } catch (error) {
         res.send(error).json({ message: "You ARE NOT logged out due to an internal error!" });
+    }
+}
+
+
+const verifyCheckAuth = (req, res, token) => {
+    return new Promise((resolve, reject) => {
+        if (!token) {
+            reject(new Error("No token provided"));
+        }
+        jwt.verify(token, process.env.SECRET_KEY, (err, payload) => {
+            if (err) {
+                console.log("This is the error when token is verified unseucde: ", err);
+                reject(new Error("Token verification failed"));
+            } else {
+                console.log("This is when token is verified successfully:");
+                req.userID = payload.id;
+                resolve();
+            }
+        });
+    });
+}
+
+export const checkAuth = async (req, res) => {
+    try {
+        const token = req.cookies.token; // You need to get the token from the request
+        if (!token) {
+            return res.status(200).json({ success: false, message: "No token provided" });
+        }
+        console.log(token, req.userID);
+        await verifyCheckAuth(req, res, token);
+        return res.status(200).json({ success: true, message: "You are authenticated!" });
+    } catch (error) {
+        return res.status(200).json({ success: false, message: "Not authenticated" });
     }
 }

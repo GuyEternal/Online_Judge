@@ -2,131 +2,86 @@ import {
   Table,
   Thead,
   Tbody,
+  Text,
   Tr,
   Th,
   Td,
   TableContainer,
+  Stack,
+  Box,
+  Link,
+  useColorModeValue,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import Navbar from "../../components/Navbar/Navbar";
+import Cookies from "universal-cookie";
+import Problem from "../Problem/Problem";
 
 function ProblemSet() {
-  // const [problems, setProblems] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [problems, setProblems] = useState([]);
+  const [selectedPid, setSelectedPid] = useState(null);
 
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:3001/api/problem")
-  //     .then((response) => {
-  //       setProblems(response.data);
-  //     })
-  //     .catch((error) => {
-  //       console.error("There was an error!", error);
-  //     });
-  // }, []);
-  const problems = [
-    {
-      _id: "6647befc093c986e88e09fa6",
-      name: "Two Sum",
-      statement:
-        "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.\n" +
-        "\n" +
-        "You may assume that each input would have exactly one solution, and you may not use the same element twice.\n" +
-        "\n" +
-        "You can return the answer in any order.\n" +
-        "\n" +
-        "Example 1:\n" +
-        "\n" +
-        "Input: nums = [2, 7, 11, 15], target = 9\n" +
-        "Output: [0, 1]\n" +
-        "Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].\n" +
-        "\n" +
-        "Example 2:\n" +
-        "\n" +
-        "Input: nums = [3, 2, 4], target = 6\n" +
-        "Output: [1, 2]\n" +
-        "\n" +
-        "Example 3:\n" +
-        "\n" +
-        "Input: nums = [3, 3], target = 6\n" +
-        "Output: [0, 1]\n" +
-        "\n" +
-        "Constraints:\n" +
-        "\n" +
-        "2 <= nums.length <= 10^4\n" +
-        "-10^9 <= nums[i] <= 10^9\n" +
-        "-10^9 <= target <= 10^9\n" +
-        "Only one valid answer exists.\n" +
-        "\n" +
-        "Follow-up: Can you come up with an algorithm that is less than O(n^2) time complexity?",
-      difficulty: "Medium",
-      submissions: [],
-      __v: 0,
-    },
-    {
-      _id: "6647bf1a093c986e88e09fac",
-      name: "3 Sum",
-      statement:
-        "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.\n" +
-        "\n" +
-        "You may assume that each input would have exactly one solution, and you may not use the same element twice.\n" +
-        "\n" +
-        "You can return the answer in any order.\n" +
-        "\n" +
-        "Example 1:\n" +
-        "\n" +
-        "Input: nums = [2, 7, 11, 15], target = 9\n" +
-        "Output: [0, 1]\n" +
-        "Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].\n" +
-        "\n" +
-        "Example 2:\n" +
-        "\n" +
-        "Input: nums = [3, 2, 4], target = 6\n" +
-        "Output: [1, 2]\n" +
-        "\n" +
-        "Example 3:\n" +
-        "\n" +
-        "Input: nums = [3, 3], target = 6\n" +
-        "Output: [0, 1]\n" +
-        "\n" +
-        "Constraints:\n" +
-        "\n" +
-        "2 <= nums.length <= 10^4\n" +
-        "-10^9 <= nums[i] <= 10^9\n" +
-        "-10^9 <= target <= 10^9\n" +
-        "Only one valid answer exists.\n" +
-        "\n" +
-        "Follow-up: Can you come up with an algorithm that is less than O(n^2) time complexity?",
-      difficulty: "Hard",
-      submissions: [],
-      __v: 0,
-    },
-  ];
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/api/problem")
+      .then((response) => {
+        console.log(response.data.length);
+        setProblems(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error!", error);
+      });
+  }, []);
 
   return (
     <div>
-      ProblemSet
-      <TableContainer>
-        <Table variant="simple" size="sm">
-          <Thead>
-            <Tr>
-              <Th>PID: </Th>
-              <Th>Problem Name</Th>
-              <Th>Tags</Th>
-              <Th isNumeric>Submitted By</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {problems.map((problem) => (
-              <Tr key={problem._id}>
-                <Td>{problem._id}</Td>
-                <Td>{problem.name}</Td>
-                {/* <Td>{problem.tags}</Td> */}
-                <Td isNumeric>Gaga gugu</Td>
+      <Navbar />
+      <Box>
+        <Stack>
+          <Text
+            fontSize={"x-large"}
+            bgColor={useColorModeValue("gray.200", "gray.900")}
+            color={useColorModeValue("gray.900", "gray.200")}
+            fontFamily={"Noto Sans"}
+          >
+            Problem Set
+          </Text>
+        </Stack>
+      </Box>
+      {selectedPid ? (
+        <Problem pid={selectedPid} />
+      ) : (
+        <TableContainer bgColor={useColorModeValue("gray.200", "gray.900")}>
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th maxW={1}>PID: </Th>
+                <Th>Problem Name</Th>
+                <Th>Tags</Th>
+                <Th isNumeric>Submitted By</Th>
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
+            </Thead>
+            <Tbody>
+              {problems.map((problem, srNo = 0) => (
+                <Tr key={problem._id}>
+                  <Td>{srNo++}</Td>
+                  <Td>
+                    <Link onClick={() => setSelectedPid(problem._id)}>
+                      {problem.name}
+                    </Link>
+                  </Td>
+                  <Td>{problem.difficulty}</Td>
+                  <Td isNumeric>45</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      )}
     </div>
   );
 }

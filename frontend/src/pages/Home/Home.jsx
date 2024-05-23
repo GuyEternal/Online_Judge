@@ -40,6 +40,8 @@ function Home() {
               colorScheme={"green"}
               bg={"green.400"}
               rounded={"full"}
+              as={"a"}
+              href="auth/register"
               px={6}
               _hover={{
                 bg: "green.500",
