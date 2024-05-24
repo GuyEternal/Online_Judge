@@ -5,6 +5,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+    },
     email: {
         type: String,
         required: true,
@@ -15,6 +20,10 @@ const userSchema = new mongoose.Schema({
         required: true,
     },
     problemCount: {
+        type: Number,
+        default: 0,
+    },
+    score: {
         type: Number,
         default: 0,
     },

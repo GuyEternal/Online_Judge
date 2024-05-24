@@ -30,7 +30,7 @@ import axios from "axios";
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
-  const [isLoggedIn, setIsLoggedIn] = useState();
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   useEffect(() => {
     axios
       .get("http://localhost:3001/api/auth/checkAuth", {
@@ -73,9 +73,12 @@ export default function Navbar() {
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
           <Text
+            as={'a'}
+            href={"http://localhost:5173"}
             className={styles.logo}
             textAlign={useBreakpointValue({ base: "center", md: "left" })}
             color={useColorModeValue("gray.800", "white")}
+            cursor={"pointer"}
           >
             AlgoPractice
           </Text>

@@ -9,11 +9,15 @@ const problemSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    difficulty: String,
-    submissions: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Submission'
-    }]
+    sampleInput: {
+        type: String,
+        required: true
+    },
+    sampleOutput: {
+        type: String,
+        required: true
+    },
+    difficulty: String
 });
 
 const Problem = mongoose.model('Problem', problemSchema);

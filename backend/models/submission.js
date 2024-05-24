@@ -23,6 +23,15 @@ const submissionSchema = new mongoose.Schema({
         type: String,
         default: 'PENDING',
     },
+    time: {
+        type: Number,
+    },
+    memory: {
+        type: Number,
+    },
+    score: {
+        type: Number,
+    },
 }, {
     timestamps: true,
 });
