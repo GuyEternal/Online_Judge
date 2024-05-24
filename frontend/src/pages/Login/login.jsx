@@ -18,20 +18,18 @@ import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const [username, setusername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const response = await axios.post(
-      "http://localhost:3001/api/auth/login",
-      {
-        email,
-        password,
-      },
-      { withCredentials: true }
-    );
+    const response = await axios.post("http://localhost:3001/api/auth/login", {
+      username,
+      email,
+      password,
+    });
     if (response.data.success) {
       console.log(response.data.id);
       console.log(document.cookie);
@@ -59,15 +57,15 @@ export default function Login() {
           p={8}
         >
           <Stack spacing={4}>
-            <FormControl id="email">
-              <FormLabel>Email address</FormLabel>
+            <FormControl id="username">
+              <FormLabel>Username</FormLabel>
               <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="username"
+                value={username}
+                onChange={(e) => setusername(e.target.value)}
               />
             </FormControl>
-            <FormControl id="password">
+            <FormControl isRequired={true} id="password">
               <FormLabel>Password</FormLabel>
               <Input
                 type="password"

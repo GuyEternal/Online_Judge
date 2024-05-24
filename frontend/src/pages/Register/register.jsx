@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Register() {
+  const [username, setusername] = useState("");
   const [fullName, setfullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,16 +28,21 @@ export default function Register() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const response = await axios.post(
-      "http://localhost:3001/api/auth/register",
-      {
-        fullName,
-        email,
-        password,
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/api/auth/register",
+        {
+          fullName,
+          username,
+          email,
+          password,
+        }
+      );
+      if (response.data.success) {
+        navigate("/auth/login");
       }
-    );
-    if (response.data.success) {
-      navigate("/auth/login");
+    } catch (error) {
+      alert(error);
     }
   };
 
@@ -70,6 +76,14 @@ export default function Register() {
                 type="text"
                 value={fullName}
                 onChange={(e) => setfullName(e.target.value)}
+              />
+            </FormControl>
+            <FormControl id="Username" isRequired>
+              <FormLabel>Username</FormLabel>
+              <Input
+                type="text"
+                value={username}
+                onChange={(e) => setusername(e.target.value)}
               />
             </FormControl>
 
@@ -118,7 +132,10 @@ export default function Register() {
             </Stack>
             <Stack pt={6}>
               <Text align={"center"}>
-                Already a user? <Link color={"blue.400"}>Login</Link>
+                Already a user?{" "}
+                <Link color={"blue.400"} href="/auth/login">
+                  Login
+                </Link>
               </Text>
             </Stack>
           </Stack>

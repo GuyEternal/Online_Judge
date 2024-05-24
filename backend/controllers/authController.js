@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import User from "../models/user.js";
 import bcrypt, { hash } from "bcrypt";
 import jwt from "jsonwebtoken";
-import cookies from "cookie-parser"
 // Use .env file to store the secret key:
 import dotenv from "dotenv";
 import { verifyToken } from "../middleware/verifyToken.js";
@@ -14,18 +13,22 @@ export const register = async (req, res) => {
     try {
         //get all the data from body
         console.log(req.body);
-        const { fullName, email, password } = req.body;
-        console.log(fullName, email, password);
+        const { fullName, username, email, password } = req.body;
+        console.log(fullName, username, email, password);
         // check that all the data should exists
-        if (!(fullName && email && password)) {
+        if (!(fullName && username && email && password)) {
             return res.status(400).send("Please enter all the information");
         }
-
-        // check if user already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(200).send("User already exists!");
+        const existingUsername = await User.findOne({ username });
+        if (existingUsername) {
+            return res.status(400).send("Username already taken");
         }
+
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) {
+            return res.status(400).send("Email already in use");
+        }
+
         // encrypt the password
         const hashedPassword = await bcrypt.hash(password, 4);
 
@@ -33,17 +36,11 @@ export const register = async (req, res) => {
         // save the user in DB
         const user = await User.create({
             fullName,
+            username,
             email,
             password: hashedPassword,
         });
         console.log("User Created in DB");
-        // generate a token for user and send it
-        const token = jwt.sign({ id: user._id, email }, process.env.SECRET_KEY, {
-            expiresIn: "1d",
-        });
-        user.token = token;
-        user.password = undefined; // Set password to undefined to avoid exposing even the hashedPassword to the client side
-
         res.status(200).json({ success: true, message: "You have successfully registered!", user });
     }
     catch (error) {
@@ -53,11 +50,11 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        if (!(email && password)) {
+        const { username, password } = req.body;
+        if (!(username && password)) {
             return res.status(400).send("Please enter all the information");
         }
-        const currUser = await User.findOne({ email });
+        const currUser = await User.findOne({ username });
         if (!currUser) {
             return res.status(400).send("User does not exist!");
             // Redirect to register or something
@@ -67,7 +64,7 @@ export const login = async (req, res) => {
                 return res.status(400).send("Invalid credentials");
             }
             // If the password is correct, generate a token:
-            const token = jwt.sign({ id: currUser._id, email }, process.env.SECRET_KEY, {
+            const token = jwt.sign({ id: currUser._id, username, email: currUser.email }, process.env.SECRET_KEY, {
                 expiresIn: "1d",
             });
             currUser.token = token;
@@ -79,9 +76,7 @@ export const login = async (req, res) => {
             // console.log(id_str);
             res.status(200).cookie("token", token, {
                 httpOnly: true,
-                secure: false,
-                sameSite: "none",
-            }).json({ message: "You have successfully logged in!", currUser, id, token, success: true });
+            }).send({ message: "You have successfully logged in!", currUser, id, token, success: true });
         });
 
     } catch (error) {
@@ -97,7 +92,6 @@ export const logout = async (req, res) => {
         res.send(error).json({ message: "You ARE NOT logged out due to an internal error!" });
     }
 }
-
 
 const verifyCheckAuth = (req, res, token) => {
     return new Promise((resolve, reject) => {

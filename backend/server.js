@@ -20,12 +20,12 @@ config();
 const app = express();
 
 // Middleware
-app.use(express.json());
-app.use(cookieParser());
 app.use(cors({
-    origin: process.env.CLIENT_URL,
+    origin: 'http://localhost:5173',
     credentials: true,
 }));
+app.use(cookieParser());
+app.use(express.json());
 
 // Connect to MongoDB
 connect(process.env.MONGO_URI);

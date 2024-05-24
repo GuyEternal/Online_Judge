@@ -27,15 +27,29 @@ import UnivCookies from "universal-cookie";
 import styles from "./styles.module.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    axios
+      .get("http://localhost:3001/api/auth/logout")
+      .then((response) => {
+        console.log("Logout!!!!");
+        setIsLoggedIn(false);
+        navigate("/");
+      })
+      .catch((error) => {
+        alert(error.message); // alert the actual error message
+      });
+  };
+
   useEffect(() => {
     axios
-      .get("http://localhost:3001/api/auth/checkAuth", {
-        withCredentials: true,
-      })
+      .get("http://localhost:3001/api/auth/checkAuth")
       .then((response) => {
         setIsLoggedIn(response.data.success);
       })
@@ -73,7 +87,7 @@ export default function Navbar() {
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
           <Text
-            as={'a'}
+            as={"a"}
             href={"http://localhost:5173"}
             className={styles.logo}
             textAlign={useBreakpointValue({ base: "center", md: "left" })}
@@ -131,7 +145,16 @@ export default function Navbar() {
               </Button>
             </Flex>
           ) : (
-            <p>User is logged in.</p>
+            <Button
+              as={"a"}
+              padding={"0.8rem"}
+              fontSize={"sm"}
+              fontWeight={400}
+              variant={"link"}
+              onClick={handleLogout}
+            >
+              Log Out
+            </Button>
           )}
         </Stack>
       </Flex>
