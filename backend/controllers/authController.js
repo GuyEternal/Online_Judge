@@ -105,6 +105,7 @@ const verifyCheckAuth = (req, res, token) => {
             } else {
                 console.log("This is when token is verified successfully:");
                 req.userID = payload.id;
+                req.username = payload.username;
                 resolve();
             }
         });
@@ -119,7 +120,12 @@ export const checkAuth = async (req, res) => {
         }
         console.log(token, req.userID);
         await verifyCheckAuth(req, res, token);
-        return res.status(200).json({ success: true, message: "You are authenticated!" });
+        return res.status(200).json({
+            success: true,
+            message: "You are authenticated!",
+            userID: req.userID,
+            username: req.username
+        });
     } catch (error) {
         return res.status(200).json({ success: false, message: "Not authenticated" });
     }

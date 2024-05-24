@@ -14,6 +14,8 @@ import {
   useColorModeValue,
   useBreakpointValue,
   useDisclosure,
+  Avatar,
+  Modal,
 } from "@chakra-ui/react";
 
 import {
@@ -30,11 +32,13 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
+  const [username, setusername] = useState(null);
   const { isOpen, onToggle } = useDisclosure();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    // setIsLoggedIn(!isLoggedIn);
     axios
       .get("http://localhost:3001/api/auth/logout")
       .then((response) => {
@@ -47,11 +51,17 @@ export default function Navbar() {
       });
   };
 
+  // const dummyLogin = () => {
+  //   setIsLoggedIn(!isLoggedIn);
+  // };
+
   useEffect(() => {
     axios
       .get("http://localhost:3001/api/auth/checkAuth")
       .then((response) => {
         setIsLoggedIn(response.data.success);
+        setusername(response.data.username);
+        0;
       })
       .catch((error) => {
         console.error("Error checking authentication status:", error);
@@ -113,21 +123,50 @@ export default function Navbar() {
           {!isLoggedIn ? (
             <Flex
               padding={2}
-              alignContent={"center"}
+              alignItems={"center"}
               justifyContent={"space-between"}
-              maxW={"400rem"}
             >
               <Button
+                maxW={"400rem"}
+                maxH={"20rem"}
                 as={"a"}
                 padding={"0.8rem"}
                 fontSize={"sm"}
                 fontWeight={400}
                 variant={"link"}
+                // onClick={dummyLogin}
                 href={"http://localhost:5173/auth/login"}
               >
                 Sign In
               </Button>
               <Button
+                maxW={"400rem"}
+                maxH={"20rem"}
+                as={"a"}
+                padding={"0.8rem"}
+                fontSize={"sm"}
+                fontWeight={600}
+                color={"black"}
+                bg={"cyan.400"}
+                href={"http://localhost:5173/auth/register"}
+                _hover={{
+                  bg: "cyan.300",
+                  transition: "0.1s",
+                }}
+              >
+                Sign Up
+              </Button>
+            </Flex>
+          ) : (
+            <Flex
+              padding={2}
+              alignContent={"center"}
+              alignItems={"center"}
+              justifyContent={"space-between"}
+            >
+              <Button
+                maxW={"400rem"}
+                maxH={"20rem"}
                 as={"a"}
                 padding={"0.8rem"}
                 display={{ base: "none", md: "inline-flex" }}
@@ -136,25 +175,20 @@ export default function Navbar() {
                 fontWeight={600}
                 color={"black"}
                 bg={"cyan.400"}
-                href={"http://localhost:5173/auth/register"}
-                _hover={{
-                  bg: "cyan.300",
-                }}
+                onClick={handleLogout}
               >
-                Sign Up
+                Log Out
               </Button>
+              <Avatar
+                maxW={"400rem"}
+                maxH={"20rem"}
+                name={username == null ? "U" : username}
+                size="md"
+                marginLeft={"0.4rem"}
+                bg={"blue.600"}
+                // onClick={}
+              ></Avatar>
             </Flex>
-          ) : (
-            <Button
-              as={"a"}
-              padding={"0.8rem"}
-              fontSize={"sm"}
-              fontWeight={400}
-              variant={"link"}
-              onClick={handleLogout}
-            >
-              Log Out
-            </Button>
           )}
         </Stack>
       </Flex>

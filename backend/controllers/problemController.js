@@ -29,7 +29,9 @@ export const createProblem = async (req, res) => {
     const problem = new Problem({
         name: req.body.name,
         statement: req.body.statement,
-        difficulty: req.body.difficulty
+        sampleInput: req.body.sampleInput,
+        sampleOutput: req.body.sampleOutput,
+        difficulty: req.body.difficulty,
     });
 
     try {
