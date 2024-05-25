@@ -38,7 +38,7 @@ db.once('open', () => {
 
 // Routes
 app.use('/api/problem', problemRouter);
-app.use('/api/submission', submissionRouter);
+app.use('/api/submissions', submissionRouter);
 app.use('/api/testcase', testcaseRouter);
 app.use('/api/auth', userRouter);
 

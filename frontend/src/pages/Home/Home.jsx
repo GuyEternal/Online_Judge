@@ -1,11 +1,17 @@
 import { Box, Heading, Container, Text, Button, Stack } from "@chakra-ui/react";
 
 import Navbar from "../../components/Navbar/Navbar.jsx";
+import { useState } from "react";
 
 function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const changeLoggedInParentState = (newState) => {
+    setIsLoggedIn(newState);
+  };
   return (
     <div>
-      <Navbar />
+      <Navbar setIsLoggedInForParent={changeLoggedInParentState} />
       <Container maxW={"4xl"}>
         <Stack
           as={Box}

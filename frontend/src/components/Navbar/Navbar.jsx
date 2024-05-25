@@ -25,13 +25,12 @@ import {
   ChevronRightIcon,
 } from "@chakra-ui/icons";
 import ColorModeSwitcher from "../ColorModeSwitcher/ColorModeSwitcher.jsx";
-import UnivCookies from "universal-cookie";
 import styles from "./styles.module.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export default function Navbar() {
+export default function Navbar({ setIsLoggedInForParent }) {
   const [username, setusername] = useState(null);
   const { isOpen, onToggle } = useDisclosure();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -43,6 +42,7 @@ export default function Navbar() {
       .get("http://localhost:3001/api/auth/logout")
       .then((response) => {
         console.log("Logout!!!!");
+        setIsLoggedInForParent(false);
         setIsLoggedIn(false);
         navigate("/");
       })
@@ -60,18 +60,20 @@ export default function Navbar() {
       .get("http://localhost:3001/api/auth/checkAuth")
       .then((response) => {
         setIsLoggedIn(response.data.success);
+        setIsLoggedInForParent(response.data.success);
         setusername(response.data.username);
         0;
       })
       .catch((error) => {
         console.error("Error checking authentication status:", error);
+        setIsLoggedInForParent(false);
         setIsLoggedIn(false);
       });
   }, []); // Removed isLoggedIn from the dependency array
   return (
     <Box className={styles["big-box"]} w={"100%"}>
       <Flex
-        bg={useColorModeValue("light", "gray.800")}
+        bg={useColorModeValue("orange.200", "gray.800")}
         color={useColorModeValue("gray.600", "white")}
         minH={"60px"}
         py={{ base: 2 }}
@@ -108,7 +110,11 @@ export default function Navbar() {
           </Text>
 
           <Flex display={{ base: "none", md: "flex" }} ml={10}>
-            <DesktopNav />
+            {isLoggedIn ? (
+              <DesktopNav navItems={NAV_ITEMS_LOGGED_OUT} />
+            ) : (
+              <DesktopNav navItems={NAV_ITEMS_LOGGED_OUT} />
+            )}
           </Flex>
         </Flex>
 
@@ -200,14 +206,13 @@ export default function Navbar() {
   );
 }
 
-const DesktopNav = () => {
+const DesktopNav = ({ navItems }) => {
   const linkColor = useColorModeValue("gray.600", "gray.200");
   const linkHoverColor = useColorModeValue("gray.800", "white");
   const popoverContentBgColor = useColorModeValue("white", "blue.900");
-
   return (
     <Stack direction={"row"} spacing={4}>
-      {NAV_ITEMS.map((navItem) => (
+      {navItems.map((navItem) => (
         <Box key={navItem.label}>
           <Popover trigger={"hover"} placement={"bottom-start"}>
             <PopoverTrigger>
@@ -392,12 +397,55 @@ const NAV_ITEMS = [
       {
         label: "My Submissions",
         subLabel: "",
-        href: "/broken",
+        href: `/submissions`,
       },
       {
         label: "All Submission",
         subLabel: "",
+        href: "/submissions",
+      },
+    ],
+  },
+];
+const NAV_ITEMS_LOGGED_OUT = [
+  {
+    label: "Problems",
+    children: [
+      {
+        label: "Problem List",
+        subLabel: "Find a list of all problems",
+        href: "/problemset",
+      },
+      {
+        label: "Submit a new problem",
+        subLabel: "If you are a problem setter",
+        href: "/404",
+      },
+    ],
+  },
+  {
+    label: "Contest",
+    children: [
+      {
+        label: "Previous Contests",
+        subLabel: "See how you've performed",
         href: "/broken",
+      },
+      {
+        label: "Upcoming Contests",
+        subLabel: "Register for new contests!",
+        href: "/broken",
+      },
+    ],
+  },
+  {
+    label: "Submissions",
+    href: "#",
+    children: [
+      {
+        label: "All Submission",
+        subLabel: "",
+        href: "/submissions",
       },
     ],
   },

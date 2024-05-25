@@ -6,10 +6,18 @@ const submissionSchema = new mongoose.Schema({
         ref: 'Problem',
         required: true,
     },
+    problemName: {
+        type: String,
+        required: false,
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
+    },
+    username: {
+        type: String,
+        required: false,
     },
     language: {
         type: String,

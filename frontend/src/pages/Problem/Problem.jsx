@@ -16,6 +16,7 @@ import {
   Editable,
   EditablePreview,
   Textarea,
+  Table,
 } from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -25,6 +26,7 @@ import { dracula } from "@uiw/codemirror-themes-all";
 import { useCallback, useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import ColorModeSwitcher from "../../components/ColorModeSwitcher/ColorModeSwitcher";
+import VerdictContainer from "../../components/VerdictContainer/VerdictContainer";
 
 function Problem({ pid }) {
   const [problem, setProblem] = useState({});
@@ -122,9 +124,10 @@ function Problem({ pid }) {
             </Box>
           </Flex>
           <Tabs variant="solid-rounded">
-            <TabList>
+            <TabList ml={5} p={3}>
               <Tab>Custom Input</Tab>
               <Tab>Output</Tab>
+              <Tab>Verdicts</Tab>
             </TabList>
             <TabPanels p={2} marginBottom={5}>
               <TabPanel>
@@ -136,6 +139,9 @@ function Problem({ pid }) {
                 <Textarea height="100px" resize={"none"} readOnly>
                   {problem.sampleOutput}
                 </Textarea>
+              </TabPanel>
+              <TabPanel>
+                <VerdictContainer></VerdictContainer>
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -150,7 +156,6 @@ function Problem({ pid }) {
         >
           <CodeMirror
             height={heightMax}
-            overflowY={scroll}
             extensions={[
               cpp(),
               basicSetup({

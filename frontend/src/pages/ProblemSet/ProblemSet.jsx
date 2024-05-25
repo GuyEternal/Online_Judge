@@ -17,7 +17,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
-import Cookies from "universal-cookie";
 import Problem from "../Problem/Problem";
 
 function ProblemSet() {
@@ -25,6 +24,9 @@ function ProblemSet() {
   const [problems, setProblems] = useState([]);
   const [selectedPid, setSelectedPid] = useState(null);
   const [currProb, setcurrProb] = useState();
+  const changeLoggedInParentState = (newState) => {
+    setIsLoggedIn(newState);
+  };
   useEffect(() => {
     axios
       .get("http://localhost:3001/api/problem")
@@ -39,7 +41,7 @@ function ProblemSet() {
 
   return (
     <div>
-      <Navbar />
+      <Navbar setIsLoggedInForParent={changeLoggedInParentState} />
       {selectedPid ? (
         <Problem pid={selectedPid} />
       ) : (
