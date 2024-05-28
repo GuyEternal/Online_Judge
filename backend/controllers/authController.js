@@ -76,6 +76,7 @@ export const login = async (req, res) => {
             // console.log(id_str);
             res.status(200).cookie("token", token, {
                 httpOnly: true,
+                maxAge: 24 * 60 * 60 * 1000,
             }).send({ message: "You have successfully logged in!", currUser, id, token, success: true });
         });
 

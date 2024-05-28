@@ -30,10 +30,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export default function Navbar({ setIsLoggedInForParent }) {
-  const [username, setusername] = useState(null);
+export default function Navbar({ loggedIn, username_prop }) {
+  const [username, setusername] = useState(username_prop);
   const { isOpen, onToggle } = useDisclosure();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(loggedIn);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -42,7 +42,6 @@ export default function Navbar({ setIsLoggedInForParent }) {
       .get("http://localhost:3001/api/auth/logout")
       .then((response) => {
         console.log("Logout!!!!");
-        setIsLoggedInForParent(false);
         setIsLoggedIn(false);
         navigate("/");
       })
@@ -60,20 +59,18 @@ export default function Navbar({ setIsLoggedInForParent }) {
       .get("http://localhost:3001/api/auth/checkAuth")
       .then((response) => {
         setIsLoggedIn(response.data.success);
-        setIsLoggedInForParent(response.data.success);
         setusername(response.data.username);
         0;
       })
       .catch((error) => {
         console.error("Error checking authentication status:", error);
-        setIsLoggedInForParent(false);
         setIsLoggedIn(false);
       });
-  }, []); // Removed isLoggedIn from the dependency array
+  }, [loggedIn, username_prop]); // Removed isLoggedIn from the dependency array
   return (
     <Box className={styles["big-box"]} w={"100%"}>
       <Flex
-        bg={useColorModeValue("orange.200", "gray.800")}
+        bg={useColorModeValue("blue.200", "gray.800")}
         color={useColorModeValue("gray.600", "white")}
         minH={"60px"}
         py={{ base: 2 }}
@@ -81,10 +78,13 @@ export default function Navbar({ setIsLoggedInForParent }) {
         borderBottom={1}
         borderStyle={"solid"}
         borderColor={useColorModeValue("gray.200", "gray.900")}
+        alignContent={"center"}
         align={"center"}
       >
         <Flex
           flex={{ base: 1, md: "auto" }}
+          alignContent="center"
+          alignItems="center"
           ml={{ base: -2 }}
           display={{ base: "flex", md: "none" }}
         >
@@ -109,7 +109,12 @@ export default function Navbar({ setIsLoggedInForParent }) {
             AlgoPractice
           </Text>
 
-          <Flex display={{ base: "none", md: "flex" }} ml={10}>
+          <Flex
+            display={{ base: "none", md: "flex" }}
+            alignContent="center"
+            alignItems="center"
+            ml={10}
+          >
             {isLoggedIn ? (
               <DesktopNav navItems={NAV_ITEMS_LOGGED_OUT} />
             ) : (

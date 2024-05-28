@@ -17,7 +17,7 @@ function App() {
           <Route path="/auth/register" element={<Register />} />
           <Route path="/auth/login" element={<Login />} />
           <Route path="/problemset" element={<ProblemSet />} />
-          <Route path="/problem" element={<Problem />} />
+          <Route path="/problem/:pid" element={<Problem />} />
           <Route path="/submissions/:username?" element={<Submissions />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

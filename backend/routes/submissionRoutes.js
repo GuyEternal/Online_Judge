@@ -6,6 +6,7 @@ const router = express.Router();
 
 // Create a new submission
 router.post('/', createSubmission);
+// router.post('/submit', createSubmission);
 
 router.get('/', getAllSubmissions);
 
@@ -16,5 +17,7 @@ router.get('/problem/:problemId', getSubmissionsByProblem);
 router.get('/user/:username', getSubmissionsByUser);
 
 router.get('/user/:username/problem/:problemId', getSubmissionsByUserAndProblem);
+
+// Create a submission and run it on all testcases i.e. submit the code
 
 export default router;

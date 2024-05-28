@@ -17,14 +17,10 @@ import {
 } from "@chakra-ui/react";
 
 export default function Submissions() {
-  const { usernameURL } = useParams(null);
+  const { usernameURL } = useParams();
   const [username, setUsername] = useState(null);
-  const [fishy, setFishy] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [submissions, setSubmissions] = useState([]);
-  const changeLoggedInParentState = (newState) => {
-    setIsLoggedIn(newState);
-  };
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -46,7 +42,6 @@ export default function Submissions() {
           setSubmissions(response.data.subs);
         });
     } else {
-      setFishy(false);
       // Fetch and display all submissions...
       axios.get("http://localhost:3001/api/submissions").then((response) => {
         setSubmissions(response.data.subs);
@@ -57,7 +52,7 @@ export default function Submissions() {
   // Render the submissions...
   return (
     <div>
-      <Navbar setIsLoggedInForParent={changeLoggedInParentState} />
+      <Navbar loggedIn={isLoggedIn} username_prop={username} />
       <Box>
         <Stack>
           <Text

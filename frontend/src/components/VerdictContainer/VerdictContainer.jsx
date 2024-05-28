@@ -10,7 +10,8 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 const subs = [
   {
@@ -50,10 +51,12 @@ const subs = [
   },
 ];
 
-function VerdictContainer() {
+function VerdictContainer({ username_prop, trigger_prop, problemID_prop }) {
   // Get current date and time
   const now = new Date();
-
+  const [username, setusername] = useState(username_prop);
+  const [trigger, setTrigger] = useState(trigger_prop);
+  const [subs, setSubs] = useState([]);
   // Format date as DD/MM/YY
 
   // Combine date and time
@@ -76,6 +79,17 @@ function VerdictContainer() {
     });
     return `${date} ${timeObj}`;
   };
+
+  useEffect(() => {
+    if (username) {
+      axios
+        .get(`http://localhost:3001/api/submissions/user/${username}/problem/${problemID_prop}`)
+        .then((response) => {
+          setSubs(response.data.subs);
+        });
+    }
+  }, [trigger]);
+
   return (
     <Box>
       <TableContainer>
@@ -90,9 +104,9 @@ function VerdictContainer() {
             </Tr>
           </Thead>
           <Tbody>
-            {subs.map((sub) => {
+            {subs.map((sub, id) => {
               return (
-                <Tr>
+                <Tr key={id++}>
                   <Td>{dateTime(sub.createdAt)}</Td>
                   <Td
                     fontSize="sm"

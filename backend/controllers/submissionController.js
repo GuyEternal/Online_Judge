@@ -81,11 +81,11 @@ export const getSubmissionsByUser = async (req, res) => {
 
 export const getSubmissionsByUserAndProblem = async (req, res) => {
     const { username, problemId } = req.params;
-
+    console.log(username, problemId);
     try {
         const problemObj = await Problem.findById(problemId);
         const problem = problemObj.name;
-        const submissionsCursor = Submission.find({ username, problem }).populate().cursor();
+        const submissionsCursor = Submission.find({ username, problem: problemId }).sort({ createdAt: -1 }).populate().cursor();
         let submissions = []
         for (let doc = await submissionsCursor.next(); doc != null; doc = await submissionsCursor.next()) {
             submissions.push(doc);

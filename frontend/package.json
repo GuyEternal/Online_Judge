@@ -28,6 +28,7 @@
     "@uiw/react-textarea-code-editor": "^3.0.2",
     "axios": "^1.6.8",
     "codemirror": "^6.0.1",
+    "eslint-plugin-react-hooks": "^4.6.2",
     "framer-motion": "^11.2.4",
     "react": "^18.2.0",
     "react-codemirror-merge": "^4.22.1",

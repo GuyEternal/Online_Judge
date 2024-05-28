@@ -1,17 +1,30 @@
 import { Box, Heading, Container, Text, Button, Stack } from "@chakra-ui/react";
 
 import Navbar from "../../components/Navbar/Navbar.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setusername] = useState();
 
-  const changeLoggedInParentState = (newState) => {
-    setIsLoggedIn(newState);
-  };
+  useEffect(() => {
+    // checkAuth
+    axios
+      .get("http://localhost:3001/api/auth/checkAuth")
+      .then((response) => {
+        setIsLoggedIn(response.data.success);
+        setusername(response.data.username);
+        0;
+      })
+      .catch((error) => {
+        console.error("Error checking authentication status:", error);
+        setIsLoggedIn(false);
+      });
+  });
   return (
     <div>
-      <Navbar setIsLoggedInForParent={changeLoggedInParentState} />
+      <Navbar loggedIn={isLoggedIn} username_prop={username} />
       <Container maxW={"4xl"}>
         <Stack
           as={Box}
