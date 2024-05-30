@@ -13,6 +13,7 @@ import problemRouter from './routes/problemRoutes.js';
 import submissionRouter from './routes/submissionRoutes.js';
 import testcaseRouter from './routes/testcaseRoutes.js';
 import userRouter from './routes/userRoutes.js';
+import runRouter from './routes/runRoutes.js';
 // Load environment variables
 config();
 
@@ -26,6 +27,7 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Connect to MongoDB
 connect(process.env.MONGO_URI);
@@ -41,6 +43,7 @@ app.use('/api/problem', problemRouter);
 app.use('/api/submissions', submissionRouter);
 app.use('/api/testcase', testcaseRouter);
 app.use('/api/auth', userRouter);
+app.use('/api/run', runRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -18,16 +18,19 @@ import {
   Textarea,
   Table,
   Skeleton,
+  Select,
 } from "@chakra-ui/react";
-import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import CodeMirror, { basicSetup } from "@uiw/react-codemirror";
-import { cpp, cppLanguage } from "@codemirror/lang-cpp";
-import { dracula } from "@uiw/codemirror-themes-all";
 import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import CodeMirror, { basicSetup } from "@uiw/react-codemirror";
 import ColorModeSwitcher from "../../components/ColorModeSwitcher/ColorModeSwitcher";
 import VerdictContainer from "../../components/VerdictContainer/VerdictContainer";
 import Navbar from "../../components/Navbar/Navbar";
+import { dracula } from "@uiw/codemirror-themes-all";
+import { cpp } from "@codemirror/lang-cpp";
+import { python } from "@codemirror/lang-python";
+import { java } from "@codemirror/lang-java";
 
 function Problem() {
   const [problem, setProblem] = useState();
@@ -35,6 +38,7 @@ function Problem() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [trigger, setTrigger] = useState(false);
   const [username, setusername] = useState();
+  const [selectedLanguage, setSelectedLanguage] = useState();
   const [code, setCode] = useState();
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
@@ -62,6 +66,20 @@ function Problem() {
     axios.post(`http://localhost:3001/api/auth/logout`).then(() => {
       navigate("/");
     });
+  };
+
+  const getLanguageExtension = (language) => {
+    switch (language) {
+      case "cpp":
+        return cpp();
+      case "python":
+        return python();
+      case "java":
+        return java();
+      // add other languages as needed
+      default:
+        return cpp(); // default language
+    }
   };
 
   useEffect(() => {
@@ -197,10 +215,24 @@ function Problem() {
             maxH={heightMax}
             overflowY="auto"
           >
+            <Select
+              variant="flushed"
+              size="sm"
+              width="20%"
+              style={{ padding: "8px" }}
+              value={selectedLanguage}
+              onChange={(e) => {
+                setSelectedLanguage(e.target.value);
+              }}
+            >
+              <option value="cpp">C++</option>
+              <option value="py">Python</option>
+              <option value="java">Java</option>
+            </Select>
             <CodeMirror
               height={heightMax}
               extensions={[
-                cpp(),
+                getLanguageExtension(selectedLanguage),
                 basicSetup({
                   extraKeys: { "Ctrl-Space": "autocomplete" },
                   highlightActiveLine: true,
@@ -211,10 +243,9 @@ function Problem() {
                 }),
               ]}
               value={code}
-              lang="cpp"
+              lang={selectedLanguage}
               theme={dracula}
               options={{
-                mode: "text/x-c++src", // for C++ support
                 theme: editorTheme, // set theme based on color mode
               }}
               style={{
