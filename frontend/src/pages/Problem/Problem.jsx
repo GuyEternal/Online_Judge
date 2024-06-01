@@ -19,6 +19,7 @@ import {
   Table,
   Skeleton,
   Select,
+  Input,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
@@ -39,6 +40,8 @@ function Problem() {
   const [trigger, setTrigger] = useState(false);
   const [username, setusername] = useState();
   const [selectedLanguage, setSelectedLanguage] = useState();
+  const [customInput, setCustomInput] = useState();
+  const [customOutput, setCustomOutput] = useState("rgwgr");
   const [code, setCode] = useState();
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
@@ -51,9 +54,31 @@ function Problem() {
     setCode(code);
   }, []);
 
-  const handleRun = () => {
+  const handleRun = async () => {
+    try {
+      await axios
+        .post(`http://localhost:3001/api/run/`, {
+          code: code,
+          language: "cpp",
+          customInput: customInput,
+        })
+        .then((response) => {
+          if (response.data.op.error) {
+            if (response.data.op.error) {
+              console.log(response.data.op.error);
+              setCustomOutput(response.data.op.error);
+            }
+            if (response.data.op.output) {
+              setCustomOutput(response.data.op.output);
+            }
+          } else {
+            console.log("Data object empty!");
+          }
+        });
+    } catch (error) {
+      console.error(error);
+    }
     console.log("Handle running the code here");
-    console.log(code);
   };
 
   const handleSubmit = () => {
@@ -183,16 +208,16 @@ function Problem() {
                   <Textarea
                     height="100px"
                     resize={"none"}
-                    defaultValue={problem.sampleInput}
+                    value={customInput}
+                    onChange={(e) => {
+                      setCustomInput(e.target.value);
+                    }}
                   ></Textarea>
                 </TabPanel>
                 <TabPanel>
-                  <Textarea
-                    height="100px"
-                    resize={"none"}
-                    defaultValue={problem.sampleOutput}
-                    readOnly
-                  ></Textarea>
+                  <Text whiteSpace="preserve-breaks" textAlign="left">
+                    {customOutput}
+                  </Text>
                 </TabPanel>
                 {isLoggedIn && (
                   <TabPanel>
@@ -225,7 +250,7 @@ function Problem() {
                 setSelectedLanguage(e.target.value);
               }}
             >
-              <option value="cpp">C++</option>
+              <option value="cpp">cpp</option>
               <option value="py">Python</option>
               <option value="java">Java</option>
             </Select>

@@ -3,6 +3,9 @@ import express from 'express'
 
 const router = express.Router();
 
-router.post('/custom', runController);
+router.get('/', (req, res) => {
+    res.send("Run route");
+});
+router.post('', runController);
 
 export default router;

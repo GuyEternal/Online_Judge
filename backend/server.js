@@ -39,11 +39,11 @@ db.once('open', () => {
 });
 
 // Routes
+app.use('/api/run', runRouter);
 app.use('/api/problem', problemRouter);
 app.use('/api/submissions', submissionRouter);
 app.use('/api/testcase', testcaseRouter);
 app.use('/api/auth', userRouter);
-app.use('/api/run', runRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
