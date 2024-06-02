@@ -59,11 +59,11 @@ function Problem() {
       await axios
         .post(`http://localhost:3001/api/run/`, {
           code: code,
-          language: "cpp",
+          language: selectedLanguage,
           customInput: customInput,
         })
         .then((response) => {
-          if (response.data.op.error) {
+          if (response.data) {
             if (response.data.op.error) {
               console.log(response.data.op.error);
               setCustomOutput(response.data.op.error);
@@ -251,8 +251,8 @@ function Problem() {
               }}
             >
               <option value="cpp">cpp</option>
-              <option value="py">Python</option>
-              <option value="java">Java</option>
+              <option value="py">py</option>
+              <option value="java">java</option>
             </Select>
             <CodeMirror
               height={heightMax}

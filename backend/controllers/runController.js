@@ -3,6 +3,8 @@ import path from "path";
 import { generateFile } from "../utils/generateFile.js";
 import { execCPP } from "../utils/execCPP.js";
 import { fileURLToPath } from 'url'
+import { execJAVA } from "../utils/execJAVA.js";
+import { execPY } from "../utils/execPY.js";
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -14,7 +16,24 @@ export const runController = async (req, res) => {
     const customInput = req.body.customInput;
     console.log(code, lang);
     const { filePath, dirOutput, randomString } = generateFile(code, lang);
-    const op = await execCPP(dirOutput, filePath, customInput, randomString);
+    let op;
+    if (lang === "cpp") {
+        op = await execCPP(dirOutput, filePath, customInput, randomString);
+    }
+    else if (lang === "py") {
+        op = await execPY(dirOutput, filePath, customInput, randomString);
+    }
+    else if (lang === "java") {
+        op = await execJAVA(dirOutput, filePath, customInput, randomString);
+    }
+    else {
+        op = {
+            error: "Invalid language",
+            output: "",
+            time: 0,
+            memory: 0
+        }
+    }
     res.json({
         op,
         code: code,

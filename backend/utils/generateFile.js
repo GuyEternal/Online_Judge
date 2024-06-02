@@ -15,8 +15,10 @@ if (!fs.existsSync(dirCodes)) {
 
 
 export const generateFile = (code, lang) => {
-    const randomString = uuidv4();
-    const fileName = `${randomString}.${lang}`; // remember to keep lang as the extension of the file when making request i.e. for python keep it as py, for c keep it as c, for c++ keep it as cpp
+    let randomChar = String.fromCharCode(97 + Math.floor(Math.random() * 26));
+    let randomString = randomChar + uuidv4();
+    randomString = randomString.replace(/-/g, '_');
+    let fileName = `${randomString}.${lang}`; // remember to keep lang as the extension of the file when making request i.e. for python keep it as py, for c keep it as c, for c++ keep it as cpp
     console.log(fileName);
     const filePath = path.join(dirCodes, fileName); // ../data/codes/fileName
     fs.writeFileSync(filePath, code);
