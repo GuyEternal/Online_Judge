@@ -11,8 +11,9 @@ const __dirname = path.dirname(__filename)
 // Controller responsible for the RUN button for a single custom input (Not all test cases)
 // For the /submit route, refer to the createSubmission route in the ../routes/submissionRoutes.js
 export const runController = async (req, res) => {
+    console.log(req.body);
     const code = req.body.code;
-    const lang = req.body.language
+    const lang = req.body.language;
     const customInput = req.body.customInput;
     console.log(code, lang);
     const { filePath, dirOutput, randomString } = generateFile(code, lang);
@@ -33,6 +34,9 @@ export const runController = async (req, res) => {
             time: 0,
             memory: 0
         }
+    }
+    if (typeof op.output === 'object' && op.output !== null) {
+        op.output = JSON.stringify(op.output);
     }
     res.json({
         op,

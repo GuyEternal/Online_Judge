@@ -13,7 +13,6 @@ if (!fs.existsSync(dirCodes)) {
     fs.mkdirSync(dirCodes, { recursive: true });
 }
 
-
 export const generateFile = (code, lang) => {
     let randomChar = String.fromCharCode(97 + Math.floor(Math.random() * 26));
     let randomString = randomChar + uuidv4();

@@ -1,8 +1,6 @@
-// controllers/submission.js
-import Submission from '../models/Submission.js';
+import Submission from '../models/submission.js';
 import Problem from '../models/problem.js';
 import mongoose from 'mongoose';
-import User from '../models/user.js';
 
 // Create a new submission
 export const createSubmission = async (req, res) => {

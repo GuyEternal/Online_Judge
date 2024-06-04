@@ -39,9 +39,9 @@ function Problem() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [trigger, setTrigger] = useState(false);
   const [username, setusername] = useState();
-  const [selectedLanguage, setSelectedLanguage] = useState();
+  const [selectedLanguage, setSelectedLanguage] = useState("cpp");
   const [customInput, setCustomInput] = useState();
-  const [customOutput, setCustomOutput] = useState("rgwgr");
+  const [customOutput, setCustomOutput] = useState("No Output");
   const [code, setCode] = useState();
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
@@ -65,8 +65,12 @@ function Problem() {
         .then((response) => {
           if (response.data) {
             if (response.data.op.error) {
-              console.log(response.data.op.error);
-              setCustomOutput(response.data.op.error);
+              console.log(response.data.op.output);
+              if (response.data.op.time > 1000) {
+                setCustomOutput("TLE");
+              } else {
+                setCustomOutput(response.data.op.error.message);
+              }
             }
             if (response.data.op.output) {
               setCustomOutput(response.data.op.output);
@@ -215,7 +219,13 @@ function Problem() {
                   ></Textarea>
                 </TabPanel>
                 <TabPanel>
-                  <Text whiteSpace="preserve-breaks" textAlign="left">
+                  <Text
+                    whiteSpace="preserve-breaks"
+                    textAlign="left"
+                    style={{
+                      bgColor: customOutput === "No Output" ? "red" : "black",
+                    }}
+                  >
                     {customOutput}
                   </Text>
                 </TabPanel>
@@ -245,12 +255,15 @@ function Problem() {
               size="sm"
               width="20%"
               style={{ padding: "8px" }}
+              defaultValue={selectedLanguage}
               value={selectedLanguage}
               onChange={(e) => {
                 setSelectedLanguage(e.target.value);
               }}
             >
-              <option value="cpp">cpp</option>
+              <option selected value="cpp">
+                cpp
+              </option>
               <option value="py">py</option>
               <option value="java">java</option>
             </Select>

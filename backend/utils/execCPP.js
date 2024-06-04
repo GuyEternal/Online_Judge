@@ -3,6 +3,8 @@ import { stderr, stdin } from 'process';
 
 const runProcess = async (op, dirOutput, randomString, customInput) => new Promise((resolve, reject) => {
     const start = new Date();
+    // When creating the dockerFile if youre using Linux, you can use the following command:
+    // const proc = exec(`cd ${dirOutput} && ./${randomString}.exe`, (err, stdout, stderr) => { 
     const proc = exec(`cd ${dirOutput} && ${randomString}`, (err, stdout, stderr) => {
         if (err) {
             console.log("Runtime Error : " + err);
@@ -50,7 +52,7 @@ export const execCPP = async (dirOutput, filePath, customInput, randomString) =>
                 try {
                     op = await Promise.race([
                         runProcess(op, dirOutput, randomString, customInput),
-                        new Promise((_, reject) => setTimeout(() => reject(new Error('Runtime time limit exceeded')), 1500))
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('Runtime time limit exceeded')), 2000))
                     ]);
                 } catch (error) {
                     console.log("Runtime Limit wala Error : " + error);
