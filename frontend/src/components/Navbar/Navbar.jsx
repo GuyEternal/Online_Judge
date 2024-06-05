@@ -424,7 +424,7 @@ const NAV_ITEMS_LOGGED_OUT = [
       {
         label: "Submit a new problem",
         subLabel: "If you are a problem setter",
-        href: "/404",
+        href: "/problem/add",
       },
     ],
   },

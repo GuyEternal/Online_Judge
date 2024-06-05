@@ -7,6 +7,7 @@ import ProblemSet from "./pages/ProblemSet/ProblemSet.jsx";
 import Problem from "./pages/Problem/Problem.jsx";
 import NotFound from "./pages/NotFound/NotFound.jsx";
 import Submissions from "./pages/Submissions/Submissions.jsx";
+import AddProblem from "./pages/AddProblem/AddProblem.jsx";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/auth/login" element={<Login />} />
           <Route path="/problemset" element={<ProblemSet />} />
           <Route path="/problem/:pid" element={<Problem />} />
+          <Route path="/problem/add" element={<AddProblem />} />
           <Route path="/submissions/:username?" element={<Submissions />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

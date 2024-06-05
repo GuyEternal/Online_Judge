@@ -42,17 +42,19 @@ function Problem() {
   const [selectedLanguage, setSelectedLanguage] = useState("cpp");
   const [customInput, setCustomInput] = useState();
   const [customOutput, setCustomOutput] = useState("No Output");
-  const [code, setCode] = useState();
   const navigate = useNavigate();
-  const { colorMode } = useColorMode();
-  const editorTheme = colorMode === "dark" ? "darcula" : "default";
   const heightMax = "70vh";
   const { pid } = useParams();
 
-  const onChangeOfCode = useCallback((code) => {
-    console.log("val:", code);
-    setCode(code);
-  }, []);
+  const [code, setCode] = useState(localStorage.getItem(`code`) || "");
+  const onChangeOfCode = useCallback(
+    (code) => {
+      console.log("val:", code);
+      setCode(code);
+      localStorage.setItem(`code`, code);
+    },
+    [code]
+  );
 
   const handleRun = async () => {
     try {
@@ -87,6 +89,7 @@ function Problem() {
 
   const handleSubmit = () => {
     console.log("Handle Submission of code here");
+
     setTrigger((prev) => !prev);
     console.log(code);
   };
@@ -219,15 +222,17 @@ function Problem() {
                   ></Textarea>
                 </TabPanel>
                 <TabPanel>
-                  <Text
+                  <Textarea
+                    padding={"0.5rem"}
+                    style={{
+                      borderWidth: "1px",
+                      borderRadius: "5px",
+                    }}
                     whiteSpace="preserve-breaks"
                     textAlign="left"
-                    style={{
-                      bgColor: customOutput === "No Output" ? "red" : "black",
-                    }}
-                  >
-                    {customOutput}
-                  </Text>
+                    value={customOutput}
+                    readOnly
+                  ></Textarea>
                 </TabPanel>
                 {isLoggedIn && (
                   <TabPanel>
@@ -255,15 +260,13 @@ function Problem() {
               size="sm"
               width="20%"
               style={{ padding: "8px" }}
-              defaultValue={selectedLanguage}
               value={selectedLanguage}
               onChange={(e) => {
+                console.log("Language Changed!!");
                 setSelectedLanguage(e.target.value);
               }}
             >
-              <option selected value="cpp">
-                cpp
-              </option>
+              <option value="cpp">cpp</option>
               <option value="py">py</option>
               <option value="java">java</option>
             </Select>
@@ -282,10 +285,7 @@ function Problem() {
               ]}
               value={code}
               lang={selectedLanguage}
-              theme={dracula}
-              options={{
-                theme: editorTheme, // set theme based on color mode
-              }}
+              theme={localStorage.getItem("chakra-ui-color-mode")}
               style={{
                 fontSize: "1rem",
                 maxHeight: heightMax,

@@ -23,6 +23,20 @@ export const createTestCase = async (req, res) => {
     }
 };
 
+export const createTestCasesByProblem = async (req, res) => {
+    const { problemId } = req.params;
+    console.log("problemId: " + problemId)
+    const testCases = req.body;
+    const createPromises = testCases.map(testcase =>
+        TestCase.create({ ...testcase, problemId: problemId })
+    );
+
+    const createdTestcases = await Promise.all(createPromises);
+    console.log("createdTestcases: " + createdTestcases)
+    res.json({ success: true });
+};
+
+
 // Get test cases by problemId
 export const getTestCasesByProblem = async (req, res) => {
     const { problemId } = req.params;
