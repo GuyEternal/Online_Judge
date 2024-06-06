@@ -75,7 +75,9 @@ function Problem() {
               }
             }
             if (response.data.op.output) {
-              setCustomOutput(response.data.op.output);
+              setCustomOutput(
+                response.data.op.output + "\n time: " + response.data.op.time
+              );
             }
           } else {
             console.log("Data object empty!");
@@ -87,9 +89,22 @@ function Problem() {
     console.log("Handle running the code here");
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("Handle Submission of code here");
-
+    try {
+      const response = await axios.post(
+        `http://localhost:3001/api/submissions/submit/${pid}`,
+        {
+          problem: problem,
+          code: code,
+          language: selectedLanguage,
+          customInput: customInput,
+          username: username,
+        }
+      );
+    } catch (err) {
+      console.log(err);
+    }
     setTrigger((prev) => !prev);
     console.log(code);
   };
@@ -238,7 +253,7 @@ function Problem() {
                   <TabPanel>
                     <VerdictContainer
                       username_prop={username}
-                      trigger={trigger}
+                      trigger_prop={trigger}
                       problemID_prop={pid}
                     />
                   </TabPanel>

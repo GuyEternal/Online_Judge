@@ -29,7 +29,7 @@ const runProcess = async (op, dirOutput, randomString, customInput) => new Promi
 
 export const execCPP = async (dirOutput, filePath, customInput, randomString) => {
     let op = {
-        error: {},
+        error: { message: '' },
         output: '',
         time: 0,
     }; // by default will contain: error (stderror or other), output, time, memory
@@ -37,11 +37,11 @@ export const execCPP = async (dirOutput, filePath, customInput, randomString) =>
         const compilationProcess = exec(`g++ ${filePath} -o ${dirOutput}/${randomString}.exe`, (err, stdout, stderr) => {
             if (err) {
                 console.log("Compilation Error : " + err);
-                op.error += err;
+                op.error.message += "Compilation Error : " + err;
             }
             if (stderr) {
                 console.log("Compilation Error : " + stderr);
-                op.error += stderr;
+                op.error.message += "Compilation Error : " + stderr;
             }
             // We don't need the stdout in this case.
             console.log("Inside Compilation Process");
@@ -55,9 +55,9 @@ export const execCPP = async (dirOutput, filePath, customInput, randomString) =>
                         new Promise((_, reject) => setTimeout(() => reject(new Error('Runtime time limit exceeded')), 2000))
                     ]);
                 } catch (error) {
-                    console.log("Runtime Limit wala Error : " + error);
-                    op.error = error;
-                    console.log(op.error);
+                    console.log("Runtime Error : " + error);
+                    op.error.message = "Runtime Error : " + error;
+                    // console.log(op.error);
                     op.time = 2000;
                     op.memory = error;
                 }

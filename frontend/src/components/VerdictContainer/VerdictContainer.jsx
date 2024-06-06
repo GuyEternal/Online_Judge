@@ -55,7 +55,7 @@ function VerdictContainer({ username_prop, trigger_prop, problemID_prop }) {
   // Get current date and time
   const now = new Date();
   const [username, setusername] = useState(username_prop);
-  const [trigger, setTrigger] = useState(trigger_prop);
+  const [dummyState, setDummyState] = useState(false);
   const [subs, setSubs] = useState([]);
   // Format date as DD/MM/YY
 
@@ -81,14 +81,18 @@ function VerdictContainer({ username_prop, trigger_prop, problemID_prop }) {
   };
 
   useEffect(() => {
+    console.log("trigger:" + trigger_prop);
+    setDummyState(!dummyState);
     if (username) {
       axios
-        .get(`http://localhost:3001/api/submissions/user/${username}/problem/${problemID_prop}`)
+        .get(
+          `http://localhost:3001/api/submissions/user/${username}/problem/${problemID_prop}`
+        )
         .then((response) => {
           setSubs(response.data.subs);
         });
     }
-  }, [trigger]);
+  }, [trigger_prop]);
 
   return (
     <Box>

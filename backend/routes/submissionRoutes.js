@@ -7,8 +7,8 @@ import { verifyToken } from '../middleware/verifyToken.js';
 const router = express.Router();
 
 // Create a new submission
-router.post('/', createSubmission);
-// router.post('/submit', createSubmission);
+// router.post('/', createSubmission);
+router.post('/submit/:pid', createSubmission);
 
 router.get('/', getAllSubmissions);
 
