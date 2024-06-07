@@ -3,7 +3,7 @@ import Problem from '../models/problem.js';
 // Controller methods for handling problem-related operations
 export const getAllProblems = async (req, res) => {
     try {
-        const problems = await Problem.find();
+        const problems = await Problem.find().sort({ createdAt: -1 });
         console.log("Problems sent!");
         console.log(problems);
         res.json(problems);

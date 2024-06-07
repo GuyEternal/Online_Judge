@@ -190,6 +190,7 @@ function Problem() {
               overflowY={scroll}
               padding={5}
               fontSize="lg"
+              textAlign={"left"}
             >
               {problem.statement}
             </Text>

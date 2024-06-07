@@ -24,6 +24,7 @@ function ProblemSet() {
   const [username, setusername] = useState();
   const [problems, setProblems] = useState([]);
   const navigate = useNavigate();
+  let srNo = 1;
   const handleLinkToProblem = (pid) => {};
   useEffect(() => {
     // checkAuth
@@ -67,32 +68,67 @@ function ProblemSet() {
           </Stack>
         </Box>
         <TableContainer bgColor={useColorModeValue("gray.200", "gray.900")}>
-          <Table variant="simple">
+          <Table
+            variant="simple"
+            _light={{ bgColor: "red.100", border: "1px solid black" }}
+          >
             <Thead>
-              <Tr>
-                <Th maxW={1}>PID: </Th>
-                <Th>Problem Name</Th>
-                <Th>Tags</Th>
-                <Th isNumeric>Submitted By</Th>
+              <Tr _light={{ bgColor: "red.100", border: "1px solid black" }}>
+                <Th
+                  _light={{ bgColor: "red.100", border: "1px solid black" }}
+                  maxW={1}
+                >
+                  PID:{" "}
+                </Th>
+                <Th _light={{ bgColor: "red.100", border: "1px solid black" }}>
+                  Problem Name
+                </Th>
+                <Th _light={{ bgColor: "red.100", border: "1px solid black" }}>
+                  Tags
+                </Th>
+                <Th
+                  _light={{ bgColor: "red.100", border: "1px solid black" }}
+                  isNumeric
+                >
+                  Submitted By
+                </Th>
               </Tr>
             </Thead>
             <Tbody>
-              {problems.map((problem, srNo = 0) => (
-                <Tr key={problem._id}>
-                  <Td>{srNo++}</Td>
-                  <Td>
-                    <Link
-                      onClick={() => {
-                        navigate("/problem/" + problem._id);
-                      }}
+              {problems
+                .slice()
+                .reverse()
+                .map((problem) => (
+                  <Tr key={problem._id}>
+                    <Td
+                      _light={{ bgColor: "red.100", border: "1px solid black" }}
                     >
-                      {problem.name}
-                    </Link>
-                  </Td>
-                  <Td>{problem.difficulty}</Td>
-                  <Td isNumeric>45</Td>
-                </Tr>
-              ))}
+                      {srNo++}
+                    </Td>
+                    <Td
+                      _light={{ bgColor: "red.100", border: "1px solid black" }}
+                    >
+                      <Link
+                        onClick={() => {
+                          navigate("/problem/" + problem._id);
+                        }}
+                      >
+                        {problem.name}
+                      </Link>
+                    </Td>
+                    <Td
+                      _light={{ bgColor: "red.100", border: "1px solid black" }}
+                    >
+                      {problem.difficulty}
+                    </Td>
+                    <Td
+                      _light={{ bgColor: "red.100", border: "1px solid black" }}
+                      isNumeric
+                    >
+                      45
+                    </Td>
+                  </Tr>
+                ))}
             </Tbody>
           </Table>
         </TableContainer>

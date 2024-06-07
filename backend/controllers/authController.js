@@ -51,6 +51,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { username, password } = req.body;
+        const redirectURL = req.query.redirect; // get the redirect URL from the query parameters
         if (!(username && password)) {
             return res.status(400).send("Please enter all the information");
         }
@@ -73,11 +74,10 @@ export const login = async (req, res) => {
             let oid = mongoose.Types.ObjectId;
             oid = currUser._id;
             let id = oid.toString();
-            // console.log(id_str);
             res.status(200).cookie("token", token, {
                 httpOnly: true,
                 maxAge: 24 * 60 * 60 * 1000,
-            }).send({ message: "You have successfully logged in!", currUser, id, token, success: true });
+            }).send({ message: "You have successfully logged in!", currUser, id, token, success: true, redirect: redirectURL });
         });
 
     } catch (error) {
@@ -85,7 +85,6 @@ export const login = async (req, res) => {
         res.send(error);
     }
 }
-
 export const logout = async (req, res) => {
     try {
         res.clearCookie("token").send("You have successfully logged out!");

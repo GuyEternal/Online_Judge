@@ -72,7 +72,11 @@ export const createSubmission = async (req, res) => {
         }
         console.log("op.error.message:" + op.error.message);
         // Check for correct output
-        if (op.output.trim() !== requiredOutput.trim()) {
+        let opLines = op.output.endsWith('\n') ? op.output.slice(0, -1).split('\n') : op.output.split('\n');
+        let requiredLines = requiredOutput.endsWith('\n') ? requiredOutput.slice(0, -1).split('\n') : requiredOutput.split('\n');
+
+        let isMatch = opLines.length === requiredLines.length && opLines.every((val, index) => val.trim() === requiredLines[index].trim());
+        if (!isMatch) {
             console.log("Testcase doesn't match:" + op.output + "!==" + requiredOutput)
             verdict = "WA"; // Wrong Answer
             break;
@@ -124,7 +128,7 @@ export const getSubmissionsByProblem = async (req, res) => {
     const { problemId } = req.params;
 
     try {
-        const submissionsCursor = Submission.find({ problemId }).populate('userId', 'email').cursor();
+        const submissionsCursor = Submission.find({ problemId }).sort({ createdAt: -1 }).populate('userId', 'email').cursor();
         let submissions = [];
         for (let doc = await submissionsCursor.next(); doc != null; doc = await submissionsCursor.next()) {
             submissions.push(doc);
@@ -140,7 +144,7 @@ export const getSubmissionsByUser = async (req, res) => {
     const username = req.params.username;
 
     try {
-        const submissionsCursor = Submission.find({ username }).populate().cursor();
+        const submissionsCursor = Submission.find({ username }).sort({ createdAt: -1 }).populate().cursor();
         let submissions = []
         for (let doc = await submissionsCursor.next(); doc != null; doc = await submissionsCursor.next()) {
             submissions.push(doc);

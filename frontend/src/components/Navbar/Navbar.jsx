@@ -43,7 +43,7 @@ export default function Navbar({ loggedIn, username_prop }) {
       .then((response) => {
         console.log("Logout!!!!");
         setIsLoggedIn(false);
-        navigate("/");
+        window.location.reload();
       })
       .catch((error) => {
         alert(error.message); // alert the actual error message

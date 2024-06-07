@@ -1,17 +1,29 @@
 import {
   Box,
+  Button,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
   Table,
   TableCaption,
   TableContainer,
   Tbody,
   Td,
+  Text,
   Tfoot,
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const subs = [
   {
@@ -57,9 +69,13 @@ function VerdictContainer({ username_prop, trigger_prop, problemID_prop }) {
   const [username, setusername] = useState(username_prop);
   const [dummyState, setDummyState] = useState(false);
   const [subs, setSubs] = useState([]);
-  // Format date as DD/MM/YY
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
 
-  // Combine date and time
+  const handleSubmissionClick = (submission) => {
+    setSelectedSubmission(submission);
+    onOpen();
+  };
   const dateTime = (time) => {
     // do some transformation from time to a formatted object of data and time
     const now = new Date(time);
@@ -93,9 +109,29 @@ function VerdictContainer({ username_prop, trigger_prop, problemID_prop }) {
         });
     }
   }, [trigger_prop]);
+  const [currSubmission, setCurrSubmission] = useState();
 
   return (
     <Box>
+      <Modal
+        onClose={onClose}
+        isOpen={isOpen}
+        isCentered
+        size={"lg"}
+        scrollBehavior="inside"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalHeader>Submission Code</ModalHeader>
+          <ModalBody>
+            <Text whiteSpace={"pre-wrap"}>{selectedSubmission?.code}</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={onClose}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <TableContainer>
         <Table variant="simple">
           <Thead>
@@ -116,11 +152,20 @@ function VerdictContainer({ username_prop, trigger_prop, problemID_prop }) {
                     fontSize="sm"
                     fontFamily="verdana, sans-serif"
                     style={{
+                      cursor: "pointer",
                       color: sub.verdict === "Accepted" ? "green" : "red",
                       fontWeight: sub.verdict === "Accepted" && "bold",
                     }}
                   >
-                    {sub.verdict}
+                    <Text
+                      colorScheme="teal"
+                      _hover={{
+                        color: "teal.500",
+                      }}
+                      onClick={() => handleSubmissionClick(sub)}
+                    >
+                      {sub.verdict}
+                    </Text>
                   </Td>
                   <Td>{sub.time + " ms"}</Td>
                   <Td>{sub.memory + " MB"}</Td>

@@ -1,4 +1,12 @@
-import { Box, Heading, Container, Text, Button, Stack } from "@chakra-ui/react";
+import {
+  Box,
+  Heading,
+  Container,
+  Text,
+  Button,
+  Stack,
+  Flex,
+} from "@chakra-ui/react";
 
 import Navbar from "../../components/Navbar/Navbar.jsx";
 import { useEffect, useState } from "react";
@@ -23,7 +31,7 @@ function Home() {
       });
   });
   return (
-    <div>
+    <Stack _light={{ bgColor: "orange.200" }} h={"100vh"}>
       <Navbar loggedIn={isLoggedIn} username_prop={username} />
       <Container maxW={"4xl"}>
         <Stack
@@ -74,7 +82,7 @@ function Home() {
           </Stack>
         </Stack>
       </Container>
-    </div>
+    </Stack>
   );
 }
 
