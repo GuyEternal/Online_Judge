@@ -95,9 +95,6 @@ export const logout = async (req, res) => {
 
 const verifyCheckAuth = (req, res, token) => {
     return new Promise((resolve, reject) => {
-        if (!token) {
-            reject(new Error("No token provided"));
-        }
         jwt.verify(token, process.env.SECRET_KEY, (err, payload) => {
             if (err) {
                 console.log("This is the error when token is verified unseucde: ", err);

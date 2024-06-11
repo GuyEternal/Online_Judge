@@ -18,6 +18,8 @@ import axios from "axios";
 import { redirect, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import Problem from "../Problem/Problem";
+import { ToastContainer, toast, Zoom, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function ProblemSet() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -29,24 +31,28 @@ function ProblemSet() {
   useEffect(() => {
     // checkAuth
     axios
-      .get("http://localhost:3001/api/auth/checkAuth")
+      .get(import.meta.env.VITE_BACKEND_URL + "/api/auth/checkAuth")
       .then((response) => {
         setIsLoggedIn(response.data.success);
         setusername(response.data.username);
         0;
       })
       .catch((error) => {
+        toast.error(
+          <p>{"Error checking authentication status" + error.message}</p>
+        );
         console.error("Error checking authentication status:", error);
         setIsLoggedIn(false);
       });
 
     axios
-      .get("http://localhost:3001/api/problem")
+      .get(import.meta.env.VITE_BACKEND_URL + "/api/problem")
       .then((response) => {
         console.log(response.data.length);
         setProblems(response.data);
       })
       .catch((error) => {
+        toast.error(<p>{error.message}</p>);
         console.error("There was an error!", error);
       });
   }, []);
@@ -55,6 +61,7 @@ function ProblemSet() {
     <div>
       <Navbar loggedIn={isLoggedIn} username_prop={username} />
       <>
+        <ToastContainer draggable={false} transition={Zoom} autoClose={8000} />
         <Box>
           <Stack>
             <Text

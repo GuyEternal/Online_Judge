@@ -26,7 +26,7 @@ export default function NotFound() {
         color="white"
         variant="solid"
         as={Link}
-        to="http://localhost:5173/"
+        to="/"
       >
         Go to Home
       </Button>

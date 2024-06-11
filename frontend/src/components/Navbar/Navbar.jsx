@@ -28,47 +28,48 @@ import ColorModeSwitcher from "../ColorModeSwitcher/ColorModeSwitcher.jsx";
 import styles from "./styles.module.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { ToastContainer, toast, Zoom, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+const Links = ["Dashboard", "Projects", "Team"];
 
 export default function Navbar({ loggedIn, username_prop }) {
   const [username, setusername] = useState(username_prop);
-  const { isOpen, onToggle } = useDisclosure();
+  const { isOpen, onOpen, onClose, onToggle } = useDisclosure();
   const [isLoggedIn, setIsLoggedIn] = useState(loggedIn);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     // setIsLoggedIn(!isLoggedIn);
     axios
-      .get("http://localhost:3001/api/auth/logout")
+      .get(import.meta.env.VITE_BACKEND_URL + "/api/auth/logout")
       .then((response) => {
         console.log("Logout!!!!");
         setIsLoggedIn(false);
         window.location.reload();
       })
       .catch((error) => {
+        toast.error(<p>{error.message}</p>);
         alert(error.message); // alert the actual error message
       });
   };
-
-  // const dummyLogin = () => {
-  //   setIsLoggedIn(!isLoggedIn);
-  // };
-
   useEffect(() => {
     axios
-      .get("http://localhost:3001/api/auth/checkAuth")
+      .get(import.meta.env.VITE_BACKEND_URL + "/api/auth/checkAuth")
       .then((response) => {
         setIsLoggedIn(response.data.success);
         setusername(response.data.username);
         0;
       })
       .catch((error) => {
+        toast.error(<p>{error.message}</p>);
         console.error("Error checking authentication status:", error);
         setIsLoggedIn(false);
       });
   }, [loggedIn, username_prop]); // Removed isLoggedIn from the dependency array
   return (
     <Box className={styles["big-box"]} w={"100%"}>
+      <ToastContainer draggable={false} transition={Zoom} autoClose={8000} />
       <Flex
         bg={useColorModeValue("blue.200", "gray.800")}
         color={useColorModeValue("gray.600", "white")}
@@ -100,7 +101,7 @@ export default function Navbar({ loggedIn, username_prop }) {
         <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
           <Text
             as={"a"}
-            href={"http://localhost:5173"}
+            href="/"
             className={styles.logo}
             textAlign={useBreakpointValue({ base: "center", md: "left" })}
             color={useColorModeValue("gray.800", "white")}
@@ -146,7 +147,7 @@ export default function Navbar({ loggedIn, username_prop }) {
                 fontWeight={400}
                 variant={"link"}
                 // onClick={dummyLogin}
-                href={"http://localhost:5173/auth/login"}
+                href="/auth/login"
               >
                 Sign In
               </Button>
@@ -159,7 +160,7 @@ export default function Navbar({ loggedIn, username_prop }) {
                 fontWeight={600}
                 color={"black"}
                 bg={"cyan.400"}
-                href={"http://localhost:5173/auth/register"}
+                href="/auth/register"
                 _hover={{
                   bg: "cyan.300",
                   transition: "0.1s",
@@ -190,6 +191,7 @@ export default function Navbar({ loggedIn, username_prop }) {
               >
                 Log Out
               </Button>
+
               <Avatar
                 maxW={"400rem"}
                 maxH={"20rem"}
@@ -205,6 +207,21 @@ export default function Navbar({ loggedIn, username_prop }) {
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
+        <Button
+          maxW={"400rem"}
+          maxH={"20rem"}
+          as={"a"}
+          padding={"0.8rem"}
+          display={{ base: "none", md: "inline-flex" }}
+          h={"100%"}
+          fontSize={"sm"}
+          fontWeight={600}
+          color={"black"}
+          bg={"cyan.400"}
+          onClick={handleLogout}
+        >
+          Log Out
+        </Button>
         <MobileNav />
       </Collapse>
     </Box>

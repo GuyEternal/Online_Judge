@@ -1,30 +1,54 @@
-import { exec, spawn } from 'child_process';
-import { stderr, stdin } from 'process';
+import { exec } from 'child_process';
+import { writeFile } from 'fs';
+import { join } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { unlink } from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const runProcess = async (op, dirOutput, randomString, customInput) => new Promise((resolve, reject) => {
     const start = new Date();
-    // When creating the dockerFile if youre using Linux, you can use the following command:
-    // const proc = exec(`cd ${dirOutput} && ./${randomString}.exe`, (err, stdout, stderr) => { 
-    const proc = exec(`cd ${dirOutput} && ${randomString}`, (err, stdout, stderr) => {
+    const inputFilePath = join(__dirname, '..', 'data', 'inputs', `${randomString}.txt`);
+    const outputFilePath = join(dirOutput, `${randomString}.exe`);
+
+    writeFile(inputFilePath, customInput, (err) => {
         if (err) {
-            console.log("Runtime Error : " + err);
+            console.log("Error writing input file: " + err);
             op.error = err;
             reject(err);
+        } else {
+            const proc = exec(`cd ${dirOutput} && ./${randomString}.exe < ${inputFilePath}`, (err, stdout, stderr) => {
+                if (err) {
+                    console.log("Runtime Error : " + err);
+                    op.error = err;
+                    reject(err);
+                }
+                if (stderr) {
+                    console.log("Runtime Error : " + stderr);
+                    op.error = stderr;
+                    reject(stderr);
+                }
+                console.log("Output : " + stdout);
+                op.output += stdout;
+                const end = new Date();
+                op.time = end - start; // convert to milliseconds
+                op.memory = process.memoryUsage().heapUsed / 1024 / 1024; // convert to MB
+                resolve(op);
+            });
+
+            proc.on('close', (code) => {
+                // Delete the input and output files after the process has finished
+                unlink(inputFilePath, (err) => {
+                    if (err) console.log(`Error deleting input file: ${err}`);
+                });
+                unlink(outputFilePath, (err) => {
+                    if (err) console.log(`Error deleting output file: ${err}`);
+                });
+            });
         }
-        if (stderr) {
-            console.log("Runtime Error : " + stderr);
-            op.error = stderr;
-            reject(stderr);
-        }
-        console.log("Output : " + stdout);
-        op.output += stdout;
-        const end = new Date();
-        op.time = end - start; // convert to milliseconds
-        op.memory = process.memoryUsage().heapUsed / 1024 / 1024; // convert to MB
-        resolve(op);
     });
-    proc.stdin.write(customInput);
-    proc.stdin.end();
 });
 
 export const execCPP = async (dirOutput, filePath, customInput, randomString) => {
@@ -59,64 +83,9 @@ export const execCPP = async (dirOutput, filePath, customInput, randomString) =>
                     op.error.message = "Runtime Error : " + error;
                     // console.log(op.error);
                     op.time = 2000;
-                    op.memory = error;
                 }
             }
             resolve(op);
         });
     });
 }
-//     const compilationProcess = exec(`g++ ${filePath} -o ${dirOutput}/${randomString}.exe`, (err, stdout, stderr) => {
-//         if (err) {
-//             console.log("Compilation Error : " + err);
-//         }
-//         if (stderr) {
-//             console.log("Compilation Error : " + stderr);
-//         }
-//         // We don't need the stdout in this case.
-//     });
-//     compilationProcess.on('exit', (code) => {   // Compilation is done
-//         if (code === 0) {
-//             return runProcess(op, dirOutput, randomString, customInput);
-//         }
-//     });
-//     console.log("Here");
-
-//     //  runProcess.stdin.write(customInput);
-//     // runProcess.stdin.end();
-
-//     return op;
-// }
-
-// const { spawn } = require('node:child_process');
-// const ps = spawn('ps', ['ax']);
-// const grep = spawn('grep', ['ssh']);
-
-// ps.stdout.on('data', (data) => {
-//   grep.stdin.write(data);
-// });
-
-// ps.stderr.on('data', (data) => {
-//   console.error(`ps stderr: ${data}`);
-// });
-
-// ps.on('close', (code) => {
-//   if (code !== 0) {
-//     console.log(`ps process exited with code ${code}`);
-//   }
-//   grep.stdin.end();
-// });
-
-// grep.stdout.on('data', (data) => {
-//   console.log(data.toString());
-// });
-
-// grep.stderr.on('data', (data) => {
-//   console.error(`grep stderr: ${data}`);
-// });
-
-// grep.on('close', (code) => {
-//   if (code !== 0) {
-//     console.log(`grep process exited with code ${code}`);
-//   }
-// });

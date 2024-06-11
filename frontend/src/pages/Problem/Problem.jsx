@@ -32,12 +32,16 @@ import { dracula } from "@uiw/codemirror-themes-all";
 import { cpp } from "@codemirror/lang-cpp";
 import { python } from "@codemirror/lang-python";
 import { java } from "@codemirror/lang-java";
+import { ToastContainer, toast, Zoom, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Problem() {
   const [problem, setProblem] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [trigger, setTrigger] = useState(false);
+  const { colorMode } = useColorMode();
+  const [editorTheme, setEditorTheme] = useState(colorMode);
   const [username, setusername] = useState();
   const [selectedLanguage, setSelectedLanguage] = useState("cpp");
   const [customInput, setCustomInput] = useState();
@@ -46,20 +50,25 @@ function Problem() {
   const heightMax = "70vh";
   const { pid } = useParams();
 
-  const [code, setCode] = useState(localStorage.getItem(`code`) || "");
+  const [code, setCode] = useState(
+    localStorage.getItem(`code-${selectedLanguage}`) || ""
+  );
   const onChangeOfCode = useCallback(
     (code) => {
       console.log("val:", code);
       setCode(code);
-      localStorage.setItem(`code`, code);
+      localStorage.setItem(`code-${selectedLanguage}`, code);
     },
     [code]
   );
 
   const handleRun = async () => {
     try {
+      if (customInput === "") {
+        toast.info(<p>"Input is empty!"</p>);
+      }
       await axios
-        .post(`http://localhost:3001/api/run/`, {
+        .post(import.meta.env.VITE_BACKEND_URL + `/api/run/`, {
           code: code,
           language: selectedLanguage,
           customInput: customInput,
@@ -81,9 +90,11 @@ function Problem() {
             }
           } else {
             console.log("Data object empty!");
+            toast.info(<p>Server Error!</p>);
           }
         });
     } catch (error) {
+      toast.error(<p>{error.message}</p>);
       console.error(error);
     }
     console.log("Handle running the code here");
@@ -93,7 +104,7 @@ function Problem() {
     console.log("Handle Submission of code here");
     try {
       const response = await axios.post(
-        `http://localhost:3001/api/submissions/submit/${pid}`,
+        import.meta.env.VITE_BACKEND_URL + `/api/submissions/submit/${pid}`,
         {
           problem: problem,
           code: code,
@@ -103,16 +114,15 @@ function Problem() {
         }
       );
     } catch (err) {
+      if (err.status === 400 || err.status === 401) {
+        toast.warning(<p>{err.message}</p>);
+      } else {
+        toast.error(<p>{err.message}</p>);
+      }
       console.log(err);
     }
     setTrigger((prev) => !prev);
     console.log(code);
-  };
-
-  const handleLogout = () => {
-    axios.post(`http://localhost:3001/api/auth/logout`).then(() => {
-      navigate("/");
-    });
   };
 
   const getLanguageExtension = (language) => {
@@ -130,9 +140,32 @@ function Problem() {
   };
 
   useEffect(() => {
+    setEditorTheme(colorMode);
+  }, [colorMode]);
+
+  useEffect(() => {
+    if (localStorage.getItem(`code-${selectedLanguage}`) === null) {
+      if (selectedLanguage === "cpp") {
+        localStorage.setItem(`code-${selectedLanguage}`, codeCPP);
+        setCode(codeCPP);
+      } else if (selectedLanguage === "java") {
+        localStorage.setItem(`code-${selectedLanguage}`, codeJava);
+        setCode(codeJava);
+      } else if (selectedLanguage === "py") {
+        localStorage.setItem(`code-${selectedLanguage}`, codePY);
+        setCode(codePY);
+      }
+    }
+  }, [selectedLanguage]);
+
+  useEffect(() => {
+    setCode(localStorage.getItem(`code-${selectedLanguage}`));
+  }, [selectedLanguage]);
+
+  useEffect(() => {
     // check auth
     axios
-      .get("http://localhost:3001/api/auth/checkAuth")
+      .get(import.meta.env.VITE_BACKEND_URL + "/api/auth/checkAuth")
       .then((response) => {
         setIsLoggedIn(response.data.success);
         setusername(response.data.username);
@@ -140,18 +173,22 @@ function Problem() {
       })
       .catch((error) => {
         console.error("Error checking authentication status:", error);
-
+        toast.error(<p>{("Error checking authentication status:", error)}</p>);
         setIsLoggedIn(false);
       });
 
     axios
-      .get(`http://localhost:3001/api/problem/${pid}`)
+      .get(import.meta.env.VITE_BACKEND_URL + `/api/problem/${pid}`)
       .then((response) => {
         setProblem(response.data);
         setIsLoading(false); // Set loading to false after data is fetched
-        console.log("Got the problem object on the frontned!!");
+        console.log("Got the problem object on the frontend!!");
+        setCustomInput(response.data.sampleInput);
       })
       .catch((error) => {
+        toast.error(
+          <p>{"There was an error in fetching a single problem!" + error}</p>
+        );
         console.error(
           "There was an error in fetching a single problem!",
           error
@@ -169,6 +206,8 @@ function Problem() {
   return (
     <>
       <Navbar loggedIn={isLoggedIn} username_prop={username} />
+      <ToastContainer draggable={false} transition={Zoom} autoClose={8000} />
+
       <Box>
         <Box>
           <Stack>
@@ -286,6 +325,7 @@ function Problem() {
               <option value="py">py</option>
               <option value="java">java</option>
             </Select>
+
             <CodeMirror
               height={heightMax}
               extensions={[
@@ -301,7 +341,7 @@ function Problem() {
               ]}
               value={code}
               lang={selectedLanguage}
-              theme={localStorage.getItem("chakra-ui-color-mode")}
+              theme={editorTheme}
               style={{
                 fontSize: "1rem",
                 maxHeight: heightMax,
@@ -327,3 +367,38 @@ function Problem() {
 }
 
 export default Problem;
+
+const codeCPP = `#include<bits/stdc++.h>
+using namespace std;
+void solve(){
+  cout << "Hello";
+}
+int main(){
+
+    int tt ; 
+    cin>>tt ; 
+    while(tt--){
+        solve() ;
+    }
+}`;
+const codePY = `print("hello")`;
+const codeJava = `import java.io.*;
+import java.util.*;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Scanning input for two numbers
+        int num1 = scanner.nextInt();
+        int num2 = scanner.nextInt();
+
+        // Calculating the sum of the two numbers
+        // int sum = num1 + num2;
+
+        System.out.println("Hello, World!");
+        // System.out.println(sum);
+    }
+}
+`;

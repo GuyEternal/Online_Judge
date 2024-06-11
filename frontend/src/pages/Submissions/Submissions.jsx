@@ -25,6 +25,9 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
+import { LinkIcon } from "@chakra-ui/icons";
+import { ToastContainer, toast, Zoom, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Submissions() {
   // const { usernameURL } = useParams();
@@ -55,7 +58,7 @@ export default function Submissions() {
   useEffect(() => {
     console.log(username);
     axios
-      .get("http://localhost:3001/api/auth/checkAuth")
+      .get(import.meta.env.VITE_BACKEND_URL + "/api/auth/checkAuth")
       .then((response) => {
         setIsLoggedIn(response.data.success);
         setusername(response.data.username);
@@ -63,30 +66,40 @@ export default function Submissions() {
         // If the user is logged in, fetch their submissions
         if (response.data.success) {
           axios
-            .get(`http://localhost:3001/api/submissions/user/${username}`)
+            .get(
+              import.meta.env.VITE_BACKEND_URL +
+                `/api/submissions/user/${username}`
+            )
             .then((response) => {
               console.log("Got the data for :" + username);
               setSubmissions(response.data.subs);
               setIsLoading(false);
             })
             .catch((error) => {
+              toast.error(
+                <p>{"Error fetching user's submissions" + error.message}</p>
+              );
               console.error("Error fetching user's submissions:", error);
             });
         } else {
           // If the user is not logged in, fetch all submissions
           axios
-            .get(`http://localhost:3001/api/submissions`)
+            .get(import.meta.env.VITE_BACKEND_URL + `/api/submissions`)
             .then((response) => {
               console.log("Got the data for ALLLL");
               setSubmissions(response.data.subs);
               setIsLoading(false);
             })
             .catch((error) => {
+              toast.error(
+                <p>{"Error fetching ALL submissions" + error.message}</p>
+              );
               console.error("Error fetching ALL submissions:", error);
             });
         }
       })
       .catch((error) => {
+        toast.error(<p>{error.message}</p>);
         console.error("Error checking authentication status:", error);
         setIsLoggedIn(false);
       });
@@ -96,6 +109,7 @@ export default function Submissions() {
   return (
     <div>
       <Navbar loggedIn={isLoggedIn} username_prop={username} />
+      <ToastContainer draggable={false} transition={Zoom} autoClose={8000} />
       <Modal onClose={onClose} isOpen={isOpen} isCentered size={"lg"}>
         <ModalOverlay />
         <ModalContent>
@@ -143,8 +157,9 @@ export default function Submissions() {
                 <Th>Problem</Th>
                 <Th>User</Th>
                 <Th>Status</Th>
+                <Th>Code</Th>
                 <Th>Runtime</Th>
-                <Th>Memory</Th>
+                {/* <Th>Memory</Th> */}
                 <Th>Language</Th>
               </Tr>
             </Thead>
@@ -163,18 +178,20 @@ export default function Submissions() {
                         fontWeight: sub.verdict === "Accepted" && "bold",
                       }}
                     >
-                      <Text
+                      <Text>{sub.verdict}</Text>
+                    </Td>
+                    <Td>
+                      <LinkIcon
                         colorScheme="teal"
+                        cursor={"pointer"}
                         _hover={{
                           color: "teal.500",
                         }}
                         onClick={() => handleSubmissionClick(sub)}
-                      >
-                        {sub.verdict}
-                      </Text>
+                      ></LinkIcon>
                     </Td>
                     <Td>{sub.time + " ms"}</Td>
-                    <Td>{sub.memory + " MB"}</Td>
+                    {/* <Td>{sub.memory + " MB"}</Td> */}
                     <Td>{sub.language}</Td>
                   </Tr>
                 );

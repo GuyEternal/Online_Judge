@@ -8,7 +8,7 @@ const router = express.Router();
 
 // Create a new submission
 // router.post('/', createSubmission);
-router.post('/submit/:pid', createSubmission);
+router.post('/submit/:pid', verifyToken, createSubmission);
 
 router.get('/', getAllSubmissions);
 

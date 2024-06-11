@@ -1,34 +1,59 @@
 import { exec } from 'child_process';
-import { stderr, stdin } from 'process';
+import { writeFile, unlink } from 'fs';
+import { join } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const runProcess = async (op, dirOutput, randomString, customInput) => new Promise((resolve, reject) => {
     const start = new Date();
-    const proc = exec(`cd ${dirOutput} && java ${randomString}`, (err, stdout, stderr) => {
+    const inputFilePath = join(__dirname, '..', 'data', 'inputs', `${randomString}.txt`);
+    const outputFilePath = join(dirOutput, `${randomString}.class`);
+
+    writeFile(inputFilePath, customInput, (err) => {
         if (err) {
-            console.log("Runtime Error : " + err);
-            op.error = err;
+            console.log("Error writing input file: " + err);
+            op.error.message = err;
             reject(err);
+        } else {
+            const proc = exec(`cd ${dirOutput} && java ${randomString} < ${inputFilePath}`, (err, stdout, stderr) => {
+                if (err) {
+                    console.log("Runtime Error : " + err);
+                    op.error.message = err;
+                    reject(err);
+                }
+                if (stderr) {
+                    console.log("Runtime Error : " + stderr);
+                    op.error.message = stderr;
+                    reject(stderr);
+                }
+                console.log("Output : " + stdout);
+                op.output += stdout;
+                const end = new Date();
+                op.time = end - start; // convert to milliseconds
+                op.memory = process.memoryUsage().heapUsed / 1024 / 1024; // convert to MB
+                resolve(op);
+            });
+
+            proc.on('close', (code) => {
+                // Delete the input and output files after the process has finished
+                unlink(inputFilePath, (err) => {
+                    if (err) console.log(`Error deleting input file: ${err}`);
+                });
+                unlink(outputFilePath, (err) => {
+                    if (err) console.log(`Error deleting output file: ${err}`);
+                });
+            });
         }
-        if (stderr) {
-            console.log("Runtime Error : " + stderr);
-            op.error = stderr;
-            reject(stderr);
-        }
-        console.log("Output : " + stdout);
-        op.output += stdout;
-        const end = new Date();
-        op.time = end - start; // convert to milliseconds
-        op.memory = process.memoryUsage().heapUsed / 1024 / 1024; // convert to MB
-        resolve(op);
     });
-    proc.stdin.write(customInput);
-    proc.stdin.end();
 });
 
 export const execJAVA = async (dirOutput, filePath, customInput, randomString) => {
     let op = {
-        error: {},
+        error: { message: '' },
         output: '',
         time: 0,
     }; // by default will contain: error (stderror or other), output, time, memory
@@ -43,11 +68,11 @@ export const execJAVA = async (dirOutput, filePath, customInput, randomString) =
         const compilationProcess = exec(`javac -d ${dirOutput} ${filePath}`, (err, stdout, stderr) => {
             if (err) {
                 console.log("Compilation Error : " + err);
-                op.error += err;
+                op.error.message += "Compilation Error : " + err;
             }
             if (stderr) {
                 console.log("Compilation Error : " + stderr);
-                op.error += stderr;
+                op.error.message += "Compilation Error : " + stderr;
             }
             // We don't need the stdout in this case.
             console.log("Inside Compilation Process");
@@ -58,13 +83,11 @@ export const execJAVA = async (dirOutput, filePath, customInput, randomString) =
                 try {
                     op = await Promise.race([
                         runProcess(op, dirOutput, randomString, customInput),
-                        new Promise((_, reject) => setTimeout(() => reject(new Error('Runtime time limit exceeded')), 1000))
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('Runtime time limit exceeded')), 2000))
                     ]);
                 } catch (error) {
-                    console.log("Runtime Limit  Error : " + error);
-                    op.output = "Runtime Limit  Error : " + error;
-                    op.error = error;
-                    console.log(op.error);
+                    console.log("Runtime Error : " + error);
+                    op.error.message = "Runtime Error : " + error;
                     op.time = 2000;
                     op.memory = error;
                 }

@@ -36,6 +36,7 @@
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
     "react-router-dom": "^6.23.1",
+    "react-toastify": "^10.0.5",
     "uiw": "^4.22.3",
     "universal-cookie": "^7.1.4",
     "uuid": "^9.0.1"

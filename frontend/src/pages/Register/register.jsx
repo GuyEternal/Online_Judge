@@ -17,6 +17,8 @@ import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast, Zoom, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Register() {
   const [username, setusername] = useState("");
@@ -29,20 +31,30 @@ export default function Register() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:3001/api/auth/register",
-        {
-          fullName,
-          username,
-          email,
-          password,
+      console.log("try:");
+      if (fullName && username && email && password) {
+        const response = await axios.post(
+          import.meta.env.VITE_BACKEND_URL + "/api/auth/register",
+          {
+            fullName,
+            username,
+            email,
+            password,
+          }
+        );
+        if (response.data.success) {
+          navigate("/auth/login");
         }
-      );
-      if (response.data.success) {
-        navigate("/auth/login");
+      } else {
+        throw new Error("Fill all the fields!");
       }
     } catch (error) {
-      alert(error);
+      console.log(error);
+      if (error.message === "Request failed with status code 400") {
+        toast.error(<p>"Email/Username already exists!"</p>);
+      } else {
+        toast.error(<p>{error.message}</p>);
+      }
     }
   };
 
@@ -53,6 +65,7 @@ export default function Register() {
       justify={"center"}
       bg={useColorModeValue("gray.50", "gray.800")}
     >
+      <ToastContainer draggable={false} transition={Zoom} autoClose={8000} />
       <Stack spacing={4} mx={"auto"} maxW={"lg"} py={1} px={4}>
         <Stack align={"center"}>
           <Heading fontSize={"4xl"} textAlign={"center"}>

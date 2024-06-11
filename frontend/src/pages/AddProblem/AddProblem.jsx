@@ -47,6 +47,8 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import dotenv from "dotenv";
 import Problem from "../Problem/Problem";
+import { ToastContainer, toast, Zoom, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function AddProblem() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -73,6 +75,7 @@ function AddProblem() {
         testcases
       );
     } catch (error) {
+      toast.error(<p>{error.message}</p>);
       console.log(error);
     }
   };
@@ -108,15 +111,15 @@ function AddProblem() {
   useEffect(() => {
     // check auth
     axios
-      .get("http://localhost:3001/api/auth/checkAuth")
+      .get(import.meta.env.VITE_BACKEND_URL + "/api/auth/checkAuth")
       .then((response) => {
         setIsLoggedIn(response.data.success);
         setusername(response.data.username);
         0;
       })
       .catch((error) => {
+        toast.error(<p>{error.message}</p>);
         console.error("Error checking authentication status:", error);
-
         setIsLoggedIn(false);
         navigate("/login");
       });
@@ -126,6 +129,7 @@ function AddProblem() {
   return (
     <>
       <Navbar loggedIn={isLoggedIn} username_prop={username} />
+      <ToastContainer draggable={false} transition={Zoom} autoClose={8000} />
       <Box>
         <Box>
           <Flex flexDirection={"column"} alignItems={"center"}>

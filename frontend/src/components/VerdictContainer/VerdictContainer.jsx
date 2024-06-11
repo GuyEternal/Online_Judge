@@ -1,3 +1,4 @@
+import { LinkIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -24,6 +25,8 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast, Zoom, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const subs = [
   {
@@ -100,19 +103,26 @@ function VerdictContainer({ username_prop, trigger_prop, problemID_prop }) {
     console.log("trigger:" + trigger_prop);
     setDummyState(!dummyState);
     if (username) {
-      axios
-        .get(
-          `http://localhost:3001/api/submissions/user/${username}/problem/${problemID_prop}`
-        )
-        .then((response) => {
-          setSubs(response.data.subs);
-        });
+      try {
+        axios
+          .get(
+            import.meta.env.VITE_BACKEND_URL +
+              `/api/submissions/user/${username}/problem/${problemID_prop}`
+          )
+          .then((response) => {
+            setSubs(response.data.subs);
+          });
+      } catch (error) {
+        toast.error(<p>{error.message}</p>);
+        console.error(error);
+      }
     }
   }, [trigger_prop]);
   const [currSubmission, setCurrSubmission] = useState();
 
   return (
     <Box>
+      <ToastContainer draggable={false} transition={Zoom} autoClose={8000} />
       <Modal
         onClose={onClose}
         isOpen={isOpen}
@@ -138,8 +148,9 @@ function VerdictContainer({ username_prop, trigger_prop, problemID_prop }) {
             <Tr>
               <Th>Time Submitted</Th>
               <Th>Status</Th>
+              <Th>Code</Th>
               <Th>Runtime</Th>
-              <Th>Memory</Th>
+              {/* <Th>Memory</Th> */}
               <Th>Language</Th>
             </Tr>
           </Thead>
@@ -157,18 +168,21 @@ function VerdictContainer({ username_prop, trigger_prop, problemID_prop }) {
                       fontWeight: sub.verdict === "Accepted" && "bold",
                     }}
                   >
-                    <Text
+                    <Text>{sub.verdict}</Text>
+                  </Td>
+                  <Td>
+                    <LinkIcon
                       colorScheme="teal"
                       _hover={{
                         color: "teal.500",
                       }}
                       onClick={() => handleSubmissionClick(sub)}
                     >
-                      {sub.verdict}
-                    </Text>
+                      Code
+                    </LinkIcon>
                   </Td>
                   <Td>{sub.time + " ms"}</Td>
-                  <Td>{sub.memory + " MB"}</Td>
+                  {/* <Td>{sub.memory + " MB"}</Td> */}
                   <Td>{sub.language}</Td>
                 </Tr>
               );

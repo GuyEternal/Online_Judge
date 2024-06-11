@@ -11,6 +11,8 @@ import {
 import Navbar from "../../components/Navbar/Navbar.jsx";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { ToastContainer, toast, Zoom, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -19,13 +21,14 @@ function Home() {
   useEffect(() => {
     // checkAuth
     axios
-      .get("http://localhost:3001/api/auth/checkAuth")
+      .get(import.meta.env.VITE_BACKEND_URL + "/api/auth/checkAuth")
       .then((response) => {
         setIsLoggedIn(response.data.success);
         setusername(response.data.username);
         0;
       })
       .catch((error) => {
+        toast.error(<p>{error.message}</p>);
         console.error("Error checking authentication status:", error);
         setIsLoggedIn(false);
       });
@@ -33,6 +36,7 @@ function Home() {
   return (
     <Stack _light={{ bgColor: "orange.200" }} h={"100vh"}>
       <Navbar loggedIn={isLoggedIn} username_prop={username} />
+      <ToastContainer draggable={false} transition={Zoom} autoClose={8000} />
       <Container maxW={"4xl"}>
         <Stack
           as={Box}

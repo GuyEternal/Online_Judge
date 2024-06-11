@@ -22,7 +22,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.CLIENT_URL,
     credentials: true,
 }));
 app.use(cookieParser());
@@ -49,7 +49,7 @@ app.use('/api/auth', userRouter);
 app.use((err, req, res, next) => {
     const errorStatus = err.status || 500;
     const errorMessage = err.message || "Something went wrong!";
-    return res.status(errorStatus).send(errorMessage);
+    return res.status(errorStatus).json({ error: errorMessage });
 });
 
 // Start the server
