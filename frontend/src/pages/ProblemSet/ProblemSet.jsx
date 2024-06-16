@@ -12,6 +12,8 @@ import {
   Link,
   useColorModeValue,
   useColorMode,
+  Tag,
+  TagLabel,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -20,11 +22,13 @@ import Navbar from "../../components/Navbar/Navbar";
 import Problem from "../Problem/Problem";
 import { ToastContainer, toast, Zoom, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import DifficultyTag from "../../components/DifficultyTag/DifficultyTag";
 
 function ProblemSet() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setusername] = useState();
   const [problems, setProblems] = useState([]);
+
   const navigate = useNavigate();
   let srNo = 1;
   const handleLinkToProblem = (pid) => {};
@@ -93,12 +97,12 @@ function ProblemSet() {
                 <Th _light={{ bgColor: "red.100", border: "1px solid black" }}>
                   Tags
                 </Th>
-                <Th
+                {/* <Th
                   _light={{ bgColor: "red.100", border: "1px solid black" }}
                   isNumeric
                 >
                   Submitted By
-                </Th>
+                </Th> */}
               </Tr>
             </Thead>
             <Tbody>
@@ -126,14 +130,14 @@ function ProblemSet() {
                     <Td
                       _light={{ bgColor: "red.100", border: "1px solid black" }}
                     >
-                      {problem.difficulty}
+                      <DifficultyTag difficulty={problem.difficulty} />
                     </Td>
-                    <Td
+                    {/* <Td
                       _light={{ bgColor: "red.100", border: "1px solid black" }}
                       isNumeric
                     >
                       45
-                    </Td>
+                    </Td> */}
                   </Tr>
                 ))}
             </Tbody>
