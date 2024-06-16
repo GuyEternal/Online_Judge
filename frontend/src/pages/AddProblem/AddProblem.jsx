@@ -69,14 +69,13 @@ function AddProblem() {
         problem
       );
       const pid = response.data._id;
-      console.log(pid);
+
       await axios.post(
         import.meta.env.VITE_BACKEND_URL + `/api/testcase/problem/${pid}`,
         testcases
       );
     } catch (error) {
       toast.error(<p>{error.message}</p>);
-      console.log(error);
     }
   };
   const handleProblemChange = (event) => {
@@ -123,9 +122,7 @@ function AddProblem() {
         setIsLoggedIn(false);
         navigate("/login");
       });
-    console.log(import.meta.env.VITE_BACKEND_URL);
-    console.log(testcases, problem);
-  }, [problem, testcases]);
+  }, []);
   return (
     <>
       <Navbar loggedIn={isLoggedIn} username_prop={username} />

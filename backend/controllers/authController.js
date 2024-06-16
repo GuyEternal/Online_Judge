@@ -89,9 +89,9 @@ export const logout = async (req, res) => {
     try {
         res.clearCookie("token").send("You have successfully logged out!");
     } catch (error) {
-        res.send(error).json({ message: "You ARE NOT logged out due to an internal error!" });
+        res.status(500).json({ message: "You ARE NOT logged out due to an internal error!", error: error.message });
     }
-}
+};
 
 const verifyCheckAuth = (req, res, token) => {
     return new Promise((resolve, reject) => {

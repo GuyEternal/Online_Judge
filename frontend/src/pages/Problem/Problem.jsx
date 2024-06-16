@@ -32,6 +32,7 @@ import { dracula } from "@uiw/codemirror-themes-all";
 import { cpp } from "@codemirror/lang-cpp";
 import { python } from "@codemirror/lang-python";
 import { java } from "@codemirror/lang-java";
+import Markdown from "react-markdown";
 import { ToastContainer, toast, Zoom, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -55,7 +56,6 @@ function Problem() {
   );
   const onChangeOfCode = useCallback(
     (code) => {
-      console.log("val:", code);
       setCode(code);
       localStorage.setItem(`code-${selectedLanguage}`, code);
     },
@@ -76,7 +76,6 @@ function Problem() {
         .then((response) => {
           if (response.data) {
             if (response.data.op.error) {
-              console.log(response.data.op.output);
               if (response.data.op.time > 1000) {
                 setCustomOutput("TLE");
               } else {
@@ -89,7 +88,6 @@ function Problem() {
               );
             }
           } else {
-            console.log("Data object empty!");
             toast.info(<p>Server Error!</p>);
           }
         });
@@ -97,11 +95,9 @@ function Problem() {
       toast.error(<p>{error.message}</p>);
       console.error(error);
     }
-    console.log("Handle running the code here");
   };
 
   const handleSubmit = async () => {
-    console.log("Handle Submission of code here");
     try {
       const response = await axios.post(
         import.meta.env.VITE_BACKEND_URL + `/api/submissions/submit/${pid}`,
@@ -119,10 +115,8 @@ function Problem() {
       } else {
         toast.error(<p>{err.message}</p>);
       }
-      console.log(err);
     }
     setTrigger((prev) => !prev);
-    console.log(code);
   };
 
   const getLanguageExtension = (language) => {
@@ -182,7 +176,7 @@ function Problem() {
       .then((response) => {
         setProblem(response.data);
         setIsLoading(false); // Set loading to false after data is fetched
-        console.log("Got the problem object on the frontend!!");
+
         setCustomInput(response.data.sampleInput);
       })
       .catch((error) => {
@@ -317,7 +311,6 @@ function Problem() {
               style={{ padding: "8px" }}
               value={selectedLanguage}
               onChange={(e) => {
-                console.log("Language Changed!!");
                 setSelectedLanguage(e.target.value);
               }}
             >

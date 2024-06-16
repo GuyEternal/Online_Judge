@@ -19,7 +19,7 @@ const runProcess = async (op, dirOutput, randomString, customInput) => new Promi
             op.error = err;
             reject(err);
         } else {
-            const proc = exec(`cd ${dirOutput} && ./${randomString}.exe < ${inputFilePath}`, (err, stdout, stderr) => {
+            const proc = exec(`cd ${dirOutput} && ${randomString}.exe < ${inputFilePath}`, (err, stdout, stderr) => {
                 if (err) {
                     console.log("Runtime Error : " + err);
                     op.error = err;
@@ -85,6 +85,14 @@ export const execCPP = async (dirOutput, filePath, customInput, randomString) =>
                     op.time = 2000;
                 }
             }
+            // Delete the file after compilation
+            unlink(filePath, (err) => {
+                if (err) {
+                    console.error(`Error deleting file ${filePath}: ${err}`);
+                } else {
+                    console.log(`File ${filePath} deleted successfully`);
+                }
+            });
             resolve(op);
         });
     });

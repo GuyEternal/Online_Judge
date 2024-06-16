@@ -4,6 +4,7 @@ import { join } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -40,6 +41,17 @@ const runProcess = async (op, dirOutput, randomString, customInput) => new Promi
                 // Delete the input file after the process has finished
                 unlink(inputFilePath, (err) => {
                     if (err) console.log(`Error deleting input file: ${err}`);
+                });
+                // Construct the path to the .py file
+                const pyFilePath = join(dirOutput, '..', 'codes', `${randomString}.py`);
+
+                // Delete the .py file
+                unlink(pyFilePath, (err) => {
+                    if (err) {
+                        console.log(`Error deleting .py file: ${err}`);
+                    } else {
+                        console.log(`.py file deleted successfully`);
+                    }
                 });
             });
         }

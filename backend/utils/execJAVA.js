@@ -92,6 +92,13 @@ export const execJAVA = async (dirOutput, filePath, customInput, randomString) =
                     op.memory = error;
                 }
             }
+            fs.unlink(filePath, (err) => {
+                if (err) {
+                    console.error(`Error deleting file ${filePath}: ${err}`);
+                } else {
+                    console.log(`File ${filePath} deleted successfully`);
+                }
+            });
             resolve(op);
         });
     });
