@@ -5,6 +5,7 @@ import { execCPP } from "../utils/execCPP.js";
 import { fileURLToPath } from 'url'
 import { execJAVA } from "../utils/execJAVA.js";
 import { execPY } from "../utils/execPY.js";
+import { unlink } from "fs";
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -19,13 +20,76 @@ export const runController = async (req, res) => {
     const { filePath, dirOutput, randomString } = generateFile(code, lang);
     let op;
     if (lang === "cpp") {
-        op = await execCPP(dirOutput, filePath, customInput, randomString);
+        try {
+            op = await execCPP(dirOutput, filePath, customInput, randomString);
+        } catch (error) {
+            op.error = error.message;
+        } finally {
+            // Delete code and .exe file only here. Input file will be deleted in execCPP funtion only
+            // my code file is stored in filePath whcih already has .cpp in it
+            // my output file is stored in dirOutput/randomString + ".cpp"
+            unlink(filePath, (err) => {
+                if (err) {
+                    console.log("error in deleting .cpp file")
+                    console.log(err);
+                } else {
+                    console.log("deleted .cpp file succesfully")
+                }
+            });
+            unlink(dirOutput + '/' + randomString + '.exe', (err) => {
+                if (err) {
+                    console.log("error in deleting .exe file")
+                    console.log(err);
+                } else {
+                    console.log("deleted .exe file succesfully")
+                }
+            });
+        }
     }
     else if (lang === "py") {
-        op = await execPY(dirOutput, filePath, customInput, randomString);
+        try {
+            op = await execPY(dirOutput, filePath, customInput, randomString);
+        } catch (error) {
+            op.error = error.message;
+        } finally {
+            // Delete code and .exe file only here. Input file will be deleted in execCPP funtion only
+            // my code file is stored in filePath whcih already has .cpp in it
+            unlink(filePath, (err) => {
+                if (err) {
+                    console.log("error in deleting .py file")
+                    console.log(err);
+                } else {
+                    console.log("deleted .py file succesfully")
+                }
+            });
+        }
     }
     else if (lang === "java") {
-        op = await execJAVA(dirOutput, filePath, customInput, randomString);
+        try {
+            op = await execJAVA(dirOutput, filePath, customInput, randomString);
+        } catch (error) {
+            op.error = error.message;
+        } finally {
+            // Delete code and .class file only here. Input file will be deleted in execCPP funtion only
+            // my code file is stored in filePath whcih already has .java in it
+            // my output file is stored in dirOutput/randomString + ".class"
+            unlink(filePath, (err) => {
+                if (err) {
+                    console.log("error in deleting .java file")
+                    console.log(err);
+                } else {
+                    console.log("deleted .java file succesfully")
+                }
+            });
+            unlink(dirOutput + '/' + randomString + '.class', (err) => {
+                if (err) {
+                    console.log("error in deleting .class file")
+                    console.log(err);
+                } else {
+                    console.log("deleted .class file succesfully")
+                }
+            });
+        }
     }
     else {
         op = {

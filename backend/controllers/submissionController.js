@@ -3,6 +3,7 @@ import Problem from '../models/problem.js';
 import mongoose from 'mongoose';
 import TestCase from '../models/testcase.js';
 import user from '../models/user.js';
+import { unlink } from 'fs';
 import { execCPP } from '../utils/execCPP.js';
 import { execPY } from '../utils/execPY.js';
 import { execJAVA } from '../utils/execJAVA.js';
@@ -37,16 +38,28 @@ export const createSubmission = async (req, res) => {
         const customInput = testcase.input;
         const requiredOutput = testcase.output;
         let op;
-        console.log("testcase: " + testcase);
+        console.log("testcase: " + testcase + "lang:" + lang);
         switch (lang) {
             case "cpp":
-                op = await execCPP(dirOutput, filePath, customInput, randomString);
+                try {
+                    op = await execCPP(dirOutput, filePath, customInput, randomString);
+                } catch (error) {
+                    op.error = error.message;
+                }
                 break;
             case "py":
-                op = await execPY(dirOutput, filePath, customInput, randomString);
+                try {
+                    op = await execPY(dirOutput, filePath, customInput, randomString);
+                } catch (error) {
+                    op.error = error.message;
+                }
                 break;
             case "java":
-                op = await execJAVA(dirOutput, filePath, customInput, randomString);
+                try {
+                    op = await execJAVA(dirOutput, filePath, customInput, randomString);
+                } catch (error) {
+                    op.error = error.message;
+                }
                 break;
             default:
                 return res.json({ error: "Invalid language" });
@@ -85,6 +98,57 @@ export const createSubmission = async (req, res) => {
         console.log("move on to the next testcase-->>" + totalTime);
         totalTime += op.time;
     }
+    switch (lang) {
+        case "cpp":
+            unlink(filePath, (err) => {
+                if (err) {
+                    console.log("error in deleting .cpp file")
+                    console.log(err);
+                } else {
+                    console.log("deleted .cpp file succesfully")
+                }
+            });
+            unlink(dirOutput + '/' + randomString + '.exe', (err) => {
+                if (err) {
+                    console.log("error in deleting .exe file")
+                    console.log(err);
+                } else {
+                    console.log("deleted .exe file succesfully")
+                }
+            });
+            break;
+        case "py":
+            unlink(filePath, (err) => {
+                if (err) {
+                    console.log("error in deleting .py file")
+                    console.log(err);
+                } else {
+                    console.log("deleted .py file succesfully")
+                }
+            });
+            break;
+        case "java":
+            unlink(filePath, (err) => {
+                if (err) {
+                    console.log("error in deleting .java file")
+                    console.log(err);
+                } else {
+                    console.log("deleted .java file succesfully")
+                }
+            });
+            unlink(dirOutput + '/' + randomString + '.class', (err) => {
+                if (err) {
+                    console.log("error in deleting .class file")
+                    console.log(err);
+                } else {
+                    console.log("deleted .class file succesfully")
+                }
+            });
+            break;
+        default:
+            return res.json({ error: "Invalid language" });
+    }
+
 
     const USER = await user.findOne({ username: username });
     console.log("User found!");
