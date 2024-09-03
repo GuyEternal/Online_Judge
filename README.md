@@ -1,12 +1,10 @@
 # Online_Judge
 
-## Design Document: Full Stack Online Judge using MERN Stack
-
 ### Problem Statement:
 Creating a Minimum Viable Product (MVP) for an Online Judge platform using the MERN (MongoDB, Express.js, React.js, Node.js) stack. The platform allows users to participate in coding challenges, submit solutions, and receive automated evaluations. 
 
 ### Overview:
-The MVP Online Judge platform enables user registration, problem listing, problem details viewing, code submission, solution evaluation, and leaderboard display. It focuses on simplicity and usability, catering to users with basic coding skills. Mainly the focus would be to first implement a basic system where people can submit code in a selected set of programming languages which the system supports and get scored/evaluated based on it.
+The MVP Online Judge platform enables user registration, problem listing, problem details viewing, code submission, and solution evaluation. It focuses on simplicity and usability, catering to users with basic coding skills. Mainly the focus would be to first implement a basic system where people can submit code in a selected set of programming languages which the system supports and get scored/evaluated based on it.
 
 ### Features:
 1. **User Registration**
@@ -27,19 +25,6 @@ The MVP Online Judge platform enables user registration, problem listing, proble
 5. **Solution Evaluation:**
    - Submitted solutions are automatically evaluated against predefined test cases.
    - Verdicts (e.g., "Accepted," "Wrong Answer", “TLE”) are generated based on evaluation results.
-
-6. **Leaderboard:**
-   - An optional feature displays a simple leaderboard ranking users based on their solved problems.
-   - Users can see their ranking relative to other participants.
-
-### Challenges:
-1. **Concurrent Requests Handling:**
-   - To ensure smooth performance during peak usage, asynchronous processing and submission queuing are implemented.
-   - Each submission is acknowledged immediately, maintaining fairness and user experience.
-
-2. **Security and Code Execution Efficiency:**
-   - Containerization using Docker isolates code execution environments, enhancing security and efficiency.
-   - Resource limits and time constraints prevent abuse and ensure timely evaluations.
 
 ### High-Level Design:
 #### 1. Database Design:
@@ -72,7 +57,7 @@ The MVP Online Judge platform enables user registration, problem listing, proble
      - submittedAt: Date (Timestamp indicating when the solution was submitted)
 
 #### 2. Web Server Design:
-   - Express.js handles API endpoints for user management, problem listing, submission handling, and leaderboard display at the backend.
+   - Express.js handles API endpoints for user management, problem listing, and submission handling at the backend.
    - Using JWT Tokens for authentication and later down the line using OAuth directly.
    - React.js frontend provides a simple user interface with screens for:
      - Problem listing
@@ -81,11 +66,8 @@ The MVP Online Judge platform enables user registration, problem listing, proble
    - Using UI Library like Chakra UI for components to be minimalistic and user-friendly, facilitating easy navigation and interaction.
 
 #### 3. Code Evaluation System:
-   - Scores will be evaluated for each submission upon which the ranking would be calculated with a simple table sorted by the scores, submittedAt time and other factors.
-   - Docker to be used for isolation of compilation of each submission 
-   - Docker containers are employed to isolate code execution environments.
-   - Pre-configured containers for popular programming languages ensure compatibility and efficiency.
+   - Pre-configured container for popular programming languages ensure compatibility and efficiency.
    - Time limits and resource constraints prevent excessive resource consumption and execution delays.
 
 ### Future Work:
-   - Caching & Plagiarism Checking
+   - Caching & Plagiarism Checking & Contests
